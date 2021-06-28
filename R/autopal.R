@@ -61,18 +61,18 @@
 #' transform the input vector, for example using `log(abs(x))`.
 #'
 #' @examples
-#' autopal(LETTERS[20:30], set = 'muted', na_colour = 'grey')
+#' autocol(LETTERS[20:30], set = 'muted', na_colour = 'grey')
 #'
-#' autopal(as.factor(c(1:10,NA,2:9,NA,3:5)), set = 'bright')
+#' autocol(as.factor(c(1:10,NA,2:9,NA,3:5)), set = 'bright')
 #'
-#' colpal = autopal(log(mtcars$qsec), 'viridis', n = 6, alpha = 0.8)
+#' colpal = autocol(log(mtcars$qsec), 'viridis', n = 6, alpha = 0.8)
 #'   plot(mtcars$hp, mtcars$wt, col = colpal, cex = mtcars$cyl, pch = 16)
 #'   autolegend(colpal, 'topleft', title = 'log(wt)', ncol = 2)
 #'
 #' # Here we want a summary plot ordered by level, so need to create a colour vector to match
 #' mixedbag = as.factor(sample(letters,1000,replace=T))
-#'   plot(x = mixedbag, y = rnorm(1000), col = autopal(levels(mixedbag)))
-#'   autolegend(autopal(levels(mixedbag)), 'bottom', ncol = 9, bty = 'n')
+#'   plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag)))
+#'   autolegend(autocol(levels(mixedbag)), 'bottom', ncol = 9, bty = 'n')
 #'
 #' @param x Vector to be mapped to colours
 #' @param set Colour set to use - 'bright' or 'muted' for categorical, or specify directly ('turbo', 'viridis', 'inferno')
@@ -80,9 +80,9 @@
 #' @param limits Colour scale limits as absolute range `c(0,10)`, or as percentile to remove outliers `c('0%','99.9%')`, or NA = all
 #' @param na_colour Colour to represent NA, defaults to NA (do not plot)
 #' @param n Continuous legend target size
-#' @return `colpal` Vector of colour hex strings for plotting, and can be used with `autolegend` which uses its attributes for legend-plotting
+#' @return Vector of colour hex strings for plotting, and can be used with `autolegend` which uses its attributes for legend-plotting
 #' @export
-autopal = function(x, set = 'bright', alpha = 1.0, limits = NA, na_colour = NA, n = 8){
+autocol = function(x, set = 'bright', alpha = 1.0, limits = NA, na_colour = NA, n = 8){
   # Sanitise the input arguments
   # TODO
 
@@ -140,12 +140,13 @@ autopal = function(x, set = 'bright', alpha = 1.0, limits = NA, na_colour = NA, 
     # All colour_sets are 256 long, so make sure we've got the full range
     x_scaled = 1 + 255 * (x - limits[1]) / (limits[2] - limits[1])
 
-    colpal = rgb(choice[x_scaled,1],choice[x_scaled,2],choice[x_scaled,3], alpha = alpha)
+    col_vector = rgb(choice[x_scaled,1],choice[x_scaled,2],choice[x_scaled,3], alpha = alpha)
 
     # Attach legend-details as attribute
     legend_labels = pretty(limits, n = n)
-    legend_labels[1] = signif(limits[1], digits = 3)
-    legend_labels[length(legend_labels)] = signif(limits[2], digits = 3)
+    longest_label = max(nchar(as.character(legend_labels)))
+    legend_labels[1] = signif(limits[1], digits = longest_label)
+    legend_labels[length(legend_labels)] = signif(limits[2], digits = longest_label)
 
     legend_fill = approx(seq(limits[1],limits[2],length.out=256), 1:256, xout=legend_labels )$y
     legend_fill[1] = 1
@@ -155,19 +156,20 @@ autopal = function(x, set = 'bright', alpha = 1.0, limits = NA, na_colour = NA, 
 
   # Reinsert any NA values
   res_pal = character(length(x))
-  res_pal[i] = colpal
+  res_pal[i] = col_vector
   res_pal[!i] = na_colour
 
-  # Attach legend info as an attribute
-  attr(res_pal, 'legend_labels') = legend_labels
-  attr(res_pal, 'legend_fill') = legend_fill
-  #names(colpal) = x
+  # Push legend levels into the global environment for plotting later
+  # This is a hidden variable
+  .autocol_legend <<- list(legend_labels,legend_fill)
 
   return(res_pal)
 }
 
 #' @export
-#' @rdname autopal
-autolegend = function(colpal, ...){
-  legend(..., legend = attr(colpal,'legend_labels'), fill = attr(colpal,'legend_fill'))
+#' @rdname autocol
+autolegend = function(...){
+  if(!exists('.autocol_legend')) stop('Must call autocol(...) first to create .autocol_legend data')
+
+  legend(..., locator(n=1), legend = .autocol_legend[[1]], fill = .autocol_legend[[2]], xpd = NA)
 }
