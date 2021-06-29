@@ -2,7 +2,7 @@
 % Please edit documentation in R/autopal.R
 \name{autocol}
 \alias{autocol}
-\title{Auto-Assign Colour Palette}
+\title{Map Colours From Value}
 \usage{
 autocol(
   x,
@@ -11,31 +11,32 @@ autocol(
   limits = NA,
   na_colour = NA,
   bias = 1,
-  legend_len
+  legend_len = 6
 )
 }
 \arguments{
 \item{x}{Vector to be mapped to colours}
 
-\item{set}{Colour set to use - 'bright' or 'muted' for categorical, or specify directly ('turbo', 'viridis', 'inferno')}
+\item{set}{Colour set to use - see ?autocol for full list. A default \code{sasha} or \code{viridis} is chosen if empty.}
 
 \item{alpha}{Transparency as a single value or as another vector (recycled to fill) - if it is a vector, all values are scaled from 0:max(alpha) -> transparent:opaque. Single values must be in range 0-1. If NA no alpha hex is added.}
 
 \item{limits}{Colour scale limits as absolute range \code{c(0,10)}, or as percentile to remove outliers \code{c('0\%','99.9\%')}, or NA = all}
 
-\item{na_colour}{Colour to represent NA, defaults to NA (do not plot)}
+\item{na_colour}{Colour to represent NA, default NA returns a colour of NA (invisible)}
 
-\item{bias}{Skew to apply to colour-ramp (2 increases resolution at low end, 0.5 at the high end)}
+\item{bias}{Skew to apply to colour-ramp (>1 increases resolution at low end, <1 at the high end)}
 
 \item{legend_len}{Continuous legend target size}
 }
 \description{
-Create a ready-to-go vector of colours and pretty legend
+Create a vector of colours and associated legend for easier base plots
 }
 \details{
 Helper function for using colours in R's default \code{plot} and \code{legend}. Colours
 from built-in palettes are automatically scaled to return a vector of colours
-with legend information included as attributes.
+and a hidden \code{.autocol_legend} which contains the correct legend mapping for
+\code{autolegend()}.
 
 A discrete palette is used for factor and character inputs whilst a
 continuous palette is used for integer and numeric.
@@ -46,14 +47,25 @@ Colour sets built-in so far are:
 
 \code{cividis} \code{inferno} \code{magma} \code{mako} \code{plasma} \code{rocket}
 \code{turbo} \code{viridis}
-\item All of the palettes incldued in RColorBrewer
+\item All of the palettes included in RColorBrewer
+\itemize{
+\item Categorical (size 8 or 9, \code{Paired} and \code{Set3} 12)
+}
 
-\code{Accent} \code{Blues} \code{BrBG} \code{BuGn} \code{BuPu} \code{Dark2} \code{GnBu}
-\code{Greens} \code{Greys} \code{Oranges} \code{OrRd} \code{Paired} \code{Pastel1}
-\code{Pastel2} \code{PiYG} \code{PRGn} \code{PuBu} \code{PuBuGn} \code{PuOr} \code{PuRd}
-\code{Purples} \code{RdBu} \code{RdGy} \code{RdPu} \code{RdYlBu} \code{RdYlGn}
-\code{Reds} \code{Set1} \code{Set2} \code{Set3} \code{Spectral} \code{YlGn} \code{YlGnBu}
-\code{YlOrBr} \code{YlOrRd} ``
+\code{Accent} \code{Set1} \code{Set2} \code{Set3} \code{Paired} \code{Pastel1} \code{Pastel2} \code{Dark2}
+\itemize{
+\item Continuous (in order of 'heat')
+}
+
+\code{Greys} \code{Blues} \code{BuGn} \code{BuPu} \code{Greens} \code{GnBu} \code{PuBu} \code{Purples} \code{PuBuGn}
+\code{YlGnBu} \code{YlGn}
+\code{YlOrBr} \code{YlOrRd} \code{Oranges} \code{OrRd} \code{Reds} \code{RdPu} \code{PuRd}
+\itemize{
+\item Divergent (first three go via yellow to form a rainbow palette)
+}
+
+\code{Spectral} \code{RdYlBu} \code{RdYlGn}
+\code{BrBG} \code{RdBu} \code{RdGy} \code{PiYG} \code{PRGn} \code{PuOr}
 \item Sasha Trubetskoy  (2017): \emph{List of 20 Simple, Distinct Colors}
 
 \code{sasha}
@@ -71,18 +83,20 @@ has an exponential distribution, a bias value > 1 will bring out contrast at
 the low end.
 }
 \examples{
-# Try scales which inlcude NA in both colour and alpha channel
+# Try scales which include NA in both colour and alpha channel
 # Note, a crude fix to reverse the palette order, and changing the autolegend labels
 with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha = Ozone, na_colour = 'black'), pch=16, cex = sqrt(Wind) ))
   .autocol_legend[[1]] = -.autocol_legend[[1]]
   autolegend(bty = 'n', horiz = T)
 
-plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width, 'PuBuGn', alpha = 0.8, bias = 1.5), cex = 3, pch = 16 )
-  autolegend('topleft', title = 'Petal.Width', ncol = 2)
+plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width, 'PuBuGn', alpha = 0.8, bias = 1.5, legend_len = 12), cex = 3, pch = 16 )
+  autolegend('topleft', title = 'Petal.Width', ncol = 3)
 
 # Here we want a summary plot ordered by level, so need to create a colour vector to match
 mixedbag = as.factor(sample(letters,1000,replace=T))
   plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag)))
-  autolegend('bottom', ncol = 9, bty = 'n')
+  autolegend('bottom', ncol = 9)
+
+# Use the limits to remove outliers
 
 }

@@ -19,14 +19,21 @@
 #'   `cividis` `inferno` `magma` `mako` `plasma` `rocket`
 #'   `turbo` `viridis`
 #'
-#' - All of the palettes incldued in RColorBrewer
+#' - All of the palettes included in RColorBrewer
+#'   - Categorical (size 8 or 9, `Paired` and `Set3` 12)
 #'
-#'   `Accent` `Blues` `BrBG` `BuGn` `BuPu` `Dark2` `GnBu`
-#'   `Greens` `Greys` `Oranges` `OrRd` `Paired` `Pastel1`
-#'   `Pastel2` `PiYG` `PRGn` `PuBu` `PuBuGn` `PuOr` `PuRd`
-#'   `Purples` `RdBu` `RdGy` `RdPu` `RdYlBu` `RdYlGn`
-#'   `Reds` `Set1` `Set2` `Set3` `Spectral` `YlGn` `YlGnBu`
-#'   `YlOrBr` `YlOrRd`
+#'   `Accent` `Set1` `Set2` `Set3` `Paired` `Pastel1` `Pastel2` `Dark2`
+#'
+#'   - Continuous (in order of 'heat')
+#'
+#'   `Greys` `Blues` `BuGn` `BuPu` `Greens` `GnBu` `PuBu` `Purples` `PuBuGn`
+#'   `YlGnBu` `YlGn`
+#'   `YlOrBr` `YlOrRd` `Oranges` `OrRd` `Reds` `RdPu` `PuRd`
+#'
+#'   - Divergent (first three go via yellow to form a rainbow palette)
+#'
+#'   `Spectral` `RdYlBu` `RdYlGn`
+#'   `BrBG` `RdBu` `RdGy` `PiYG` `PRGn` `PuOr`
 #'
 #' - Sasha Trubetskoy  (2017): *List of 20 Simple, Distinct Colors*
 #'
@@ -56,13 +63,15 @@
 #'   plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag)))
 #'   autolegend('bottom', ncol = 9)
 #'
+#' # Use the limits to remove outliers
+#'
 #' @param x Vector to be mapped to colours
 #' @param set Colour set to use - see ?autocol for full list. A default `sasha` or `viridis` is chosen if empty.
 #' @param alpha Transparency as a single value or as another vector (recycled to fill) - if it is a vector, all values are scaled from 0:max(alpha) -> transparent:opaque. Single values must be in range 0-1. If NA no alpha hex is added.
 #' @param limits Colour scale limits as absolute range `c(0,10)`, or as percentile to remove outliers `c('0%','99.9%')`, or NA = all
 #' @param na_colour Colour to represent NA, default NA returns a colour of NA (invisible)
+#' @param bias Skew to apply to colour-ramp (>1 increases resolution at low end, <1 at the high end)
 #' @param legend_len Continuous legend target size
-#' @param bias Skew to apply to colour-ramp (2 increases resolution at low end, 0.5 at the high end)
 #' @export
 autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 1, legend_len = 6){
   # Sanitise the input arguments
@@ -103,12 +112,17 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
   if(pal_type=='continuous'){
     if(set=='') set = 'viridis'
     chosen_colour_ramp = colorRamp(get(set), space = 'Lab', bias = bias)
-    limits = correct_limits(x = x, limits = limits)
+    # Correct limits
+    if(is.na(limits[1]))
+      limits = range(x, na.rm = T)
+    if(is.character(limits))
+      limits = quantile(x = x, probs = as.numeric(gsub('[^0-9\\.]','',limits))/100)
+
     create_autolegend_data(limits = limits, chosen_colour_ramp = chosen_colour_ramp, legend_len = legend_len)
 
     x_scaled = (x - limits[1]) / (limits[2] - limits[1])
     x_scaled = pmin(1,pmax(0, x_scaled))
-    # rgb() cannot pass na values, so find and replace
+    # rgb() cannot pass na values, so find and replace these NA for now
     x_scaled[x_na] = 0
     res_pal = rgb(chosen_colour_ramp(x_scaled), maxColorValue = 255)
     res_pal[x_na] = NA
@@ -120,6 +134,7 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
   # Deal with the alpha channel - this is the same for categorical and discrete
   # The values are mapped 0 (transparent) to 255 (solid), such that either 1.0
   # is solid, or whatever the maximum value is.
+  # col2rgb() allows the res_pal so far to have colour names --> hex codes
   if(!is.na(alpha[1])){
     max_alpha = if(length(alpha)==1) 1 else max(alpha,na.rm=T)
     alpha = pmax(0, alpha, na.rm = T) # Negative alpha and NA are both turned invisible
@@ -136,8 +151,10 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
 #' so the position of the legend can be picked interactively.
 #'
 #' @examples
-#' autolegend('topright', ncol = 2)
+#' autolegend('topright', ncol = 2, title = 'Legend')
 #' autolegend(horiz = T, bty = 'n') # Try clicking just under the plot title
+#'
+#' @param ... Arguments passed directly to `legend` - legend text and fill are taken automatically from hidden `.autocol_legend`
 #' @export
 autolegend = function(...){
   if(!exists('.autocol_legend')) stop('Must call autocol(...) first to create .autocol_legend data')
@@ -145,52 +162,34 @@ autolegend = function(...){
   legend(..., locator(n=1), legend = .autocol_legend[[1]], fill = .autocol_legend[[2]], xpd = NA)
 }
 
-#' Create Capped Colour Palette For Images
+#' Auto-Palette
 #'
-#' Returns a colour palette and necessary breaks for image
+#' Return a palette vector from one of the built-in sets
 #'
-#' See ?autocol for more detail on everything except examples. The mechanism is slightly
-#' different here because the full palette and corresponding breaks are given.
-#' The main help here (rather than just using zlim) is to cap outliers, rather
-#' than omitting them.
+#' This can be used where a palette is provided rather than a mapped colour
+#' vector, for example image(). The limits can be specified for the `autolegend`
+#' generated every time a new palette is made.
+#' Custom colour limits can be set using `breaks` or `levels` (see examples) if
+#' the same colour range is needed across several plots.
+#' See ?autocol for list of all available colour sets.
 #'
 #' @examples
-#' z = matrix(runif(100), nrow=10)
-#' imcol = autoimcol(z = z, set = 'viridis', limits = c(0.1,0.9) )
-#' image(z, col = imcol, breaks = .auto_imbreaks)
-#' autolegend()
-autoimcol = function(z, set, limits = NA, n = 30, legend_len = 6, bias = 1){
-  chosen_colour_ramp = colorRamp(get(set), space = 'Lab', bias = bias)
-  limits = correct_limits(x = z, limits = limits)
-  create_autolegend_data(limits = limits, chosen_colour_ramp = chosen_colour_ramp, legend_len = legend_len)
-  .auto_imbreaks <<- c(min(z,na.rm=T), seq(limits[1],limits[2],length.out=n-1), max(z,na.rm=T))
-  # Note, these colours apply to the middle of each interval, given that the first interval is all the capped values, duplicate first (and last) colour
-  imcolours = rgb(chosen_colour_ramp(c(0,seq(0,1,length.out=n-2),1)), maxColorValue = 255)
-  return(imcolours)
-}
-
-#' z = matrix(sort(rnorm(1e4)), nrow=1e2)
-#' image(z, col = autopal('RdYlGn', n=100, limits=c(-3,5), bias = 2), breaks=seq(-3,5,length.out=101) )
-#' autolegend()
+#' image(volcano, col = autopal('RdYlGn', n=100, limits=c(50,200), bias = 1.5), breaks=seq(50,200,length.out=101) )
+#'   autolegend()
+#' # Or using the slightly smarter filled.contour
+#' filled.contour(volcano, col = autopal('RdYlGn', n=20, limits=c(100,150)), levels = seq(50,200,length.out=21) )
+#'
+#' @param set Colour set to use - see ?autocol for full list. A default `sasha` or `viridis` is chosen if empty.
+#' @param limits Colour scale limits to pass to legend eg `c(0,10)` - if left as `NA` no autolegend will be generated
+#' @param bias Skew to apply to colour-ramp (>1 increases resolution at low end, <1 at the high end)
+#' @param legend_len Continuous legend target size
+#' @export
 autopal = function(set, n = 30, limits = NA, bias = 1, legend_len = 6){
   chosen_colour_ramp = colorRamp(get(set), space = 'Lab', bias = bias)
   if(!is.na(limits[1]))
     create_autolegend_data(limits = limits, chosen_colour_ramp = chosen_colour_ramp, legend_len = legend_len)
   palcols = rgb(chosen_colour_ramp(c(0,seq(0,1,length.out=n-2),1)), maxColorValue = 255)
   return(palcols)
-}
-
-correct_limits = function(x, limits){
-  if(is.na(limits[1])){
-    limits = range(x, na.rm = T)
-  }
-  else{
-    if(is.character(limits)){
-      limits = as.numeric(gsub('[^0-9\\.]','',limits))
-      limits = quantile(x = x, probs = limits/100)
-    }
-  }
-  return(limits)
 }
 
 create_autolegend_data = function(limits, chosen_colour_ramp, legend_len = 6){

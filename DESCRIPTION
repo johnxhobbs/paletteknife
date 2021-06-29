@@ -1,14 +1,15 @@
 Package: paletteknife
-Title: Create Colour Scales From Continuous Or Categorical Vectors
-Version: 0.1.0
+Title: Create Colour Scales And Legend From Continuous Or Categorical Vectors
+Version: 0.2.0
 Authors@R: 
   person(given = "John",
          family = "Hobbs",
          role = c("aut", "cre"),
          email = "johnxhobbs@gmail.com")
 Description: This function embeds a few of the most popular colour palettes (ColorBrewer, Viridis, Turbo, and others) 
-             and wraps them in a simple helper function which converts values to colour hex strings. The output can 
-             be used with the default plot() functions, and the simple autolegend() wrapper for legend().
+             and wraps them in a simple colorRamp helper function to facilitate fast mapping of a variable to colour.
+             The output can be used with the default plot() functions in-line, or as a static palette for image().
+             Creating a palette creates a hidden legend object which can be plotted interactively with no further faff.
 License: MIT + file LICENSE
 Encoding: UTF-8
 LazyData: true

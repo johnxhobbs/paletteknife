@@ -2,3 +2,4 @@
 
 export(autocol)
 export(autolegend)
+export(autopal)

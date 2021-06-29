@@ -6,6 +6,9 @@
 \usage{
 autolegend(...)
 }
+\arguments{
+\item{...}{Arguments passed directly to \code{legend} - legend text and fill are taken automatically from hidden \code{.autocol_legend}}
+}
 \description{
 Add a legend for the last autocol() set generated
 }
@@ -14,6 +17,7 @@ If no location (such as 'bottom') is given, then it calls the locator() crosshai
 so the position of the legend can be picked interactively.
 }
 \examples{
-autolegend('topright', ncol = 2)
+autolegend('topright', ncol = 2, title = 'Legend')
 autolegend(horiz = T, bty = 'n') # Try clicking just under the plot title
+
 }
