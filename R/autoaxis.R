@@ -48,6 +48,7 @@
 #'
 #' plot(seq(as.Date('2013-02-01'),as.Date('2020-01-03'),length.out=1e3), rnorm(1e3), xlab='Date', xaxt='n')
 #'   autoaxis(side=1, major='year', minor='quarter', format = '%Y')
+#' @export
 autoaxis = function(side, major = NA, minor = NA, spacing = TRUE, format = '%Y-%m-%d', tck=-0.03, major_grid = FALSE, minor_grid = FALSE, ...){
   if(side %in% c(1,3))
     lims = par('usr')[1:2] # Drawing x-axis
