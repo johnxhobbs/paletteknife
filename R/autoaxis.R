@@ -96,9 +96,9 @@ autoaxis = function(side, major = NA, minor = NA, spacing = TRUE, format = '%Y-%
   }
 
   if(!is.na(major) & date_axis & date_format)
-    major_at = as.Date(major_at)
+    major_at = as.numeric(major_at) / 86400 # Do not use as.Date - gets rid of decimal hour
   if(!is.na(minor) & date_axis & date_format)
-    minor_at = as.Date(minor_at)
+    minor_at = as.numeric(minor_at) / 86400
 
   # Add the axis
   if(!is.na(major)) axis(side=side, at=major_at, labels=major_labs, tck=tck, ...)
