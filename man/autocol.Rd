@@ -82,21 +82,3 @@ The skew of the colourscale can be adjusted with \code{bias}, for example if \co
 has an exponential distribution, a bias value > 1 will bring out contrast at
 the low end.
 }
-\examples{
-# Try scales which include NA in both colour and alpha channel
-# Note, a crude fix to reverse the palette order, and changing the autolegend labels
-with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha = Ozone, na_colour = 'black'), pch=16, cex = sqrt(Wind) ))
-  .autocol_legend[[1]] = -.autocol_legend[[1]]
-  autolegend(bty = 'n', horiz = T)
-
-plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width, 'PuBuGn', alpha = 0.8, bias = 1.5, legend_len = 12), cex = 3, pch = 16 )
-  autolegend('topleft', title = 'Petal.Width', ncol = 3)
-
-# Here we want a summary plot ordered by level, so need to create a colour vector to match
-mixedbag = as.factor(sample(letters,1000,replace=T))
-  plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag)))
-  autolegend('bottom', ncol = 9)
-
-# Use the limits to remove outliers
-
-}

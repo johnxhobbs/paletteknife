@@ -63,6 +63,16 @@
 #'   plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag)))
 #'   autolegend('bottom', ncol = 9)
 #'
+#' # Maintain the order of strings
+#' barplot(1:8, col=autocol(LETTERS[8:1]))
+#'   autolegend('topleft)
+#'
+#' # All colour scales must be string / number, so will require 'unclassing'
+#' x=as.Date('2000-01-01')+0:100
+#'   plot(x, pch=16, col=autocol(as.numeric(x)) )
+#'   attr(.autocol_legend[[1]], 'class') <- class(x)
+#'   autolegend()
+
 #' # Use the limits to remove outliers
 #'
 #' @param x Vector to be mapped to colours
@@ -97,6 +107,7 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
         set = 'sasha'
     }
     set_palette = get(set)
+    if(class(x)=='character') x = factor(x, levels=unique(x))
     col_level = as.integer(as.factor(x)) %% length(set_palette)
     col_level[col_level==0] = length(set_palette)
 
