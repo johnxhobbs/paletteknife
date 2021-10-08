@@ -39,7 +39,7 @@
 #'   `sasha`
 #'
 #' Custom limits can be specified, in two ways:
-#'   - percentile limits `c('5%','90%')`: this is essential for clamping down on outliers which compress the colour scale
+#'   - percentile limits `c('5%','90%')`: this is useful for clamping down on outliers which distort the colour scale
 #'   - absolute limits `c(0,10)`: useful if multiple plots using the same range are required for cross-comparison
 #'   - default behaviour `limits = NA`: adjust to exactly fit input range
 #'
@@ -58,8 +58,9 @@
 #'   autolegend('topleft', title = 'Petal.Width', ncol = 3)
 #'
 #' # Here we want a summary plot ordered by level, so need to create a colour vector to match
+#' # 'Alphabet' is a built-in colour set, see "palette.pals()"
 #' mixedbag = as.factor(sample(letters,1000,replace=T))
-#'   plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag)))
+#'   plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag), set='Alphabet'))
 #'   autolegend('bottom', ncol = 9)
 #'
 #' # Maintain the order of strings
@@ -71,6 +72,10 @@
 #'   plot(x, pch=16, col=autocol(as.numeric(x)) )
 #'   attr(.autocol_legend[[1]], 'class') <- class(x)
 #'   autolegend()
+#'
+#' # Logical vectors can be plotted, but also trivial with default palette()
+#' plot(runif(4), col=autocol(c(T,F,F,T), set = c('red','black')), pch=16, cex=5)
+#' plot(runif(4), col=2-c(T,F,F,T), pch=16, cex=5)
 #'
 #' # Use the limits to remove outliers, useful for noisy extremes or if a narrow band of 'good' is wanted
 #' plot(as.numeric(treering),pch=16,col=autocol(as.numeric(treering),set='RdYlBu',limits=c(0.5,1.2)))
@@ -84,9 +89,11 @@
 #'
 #' @param x Vector to be mapped to colours
 #' @param set Colour set to use - see ?autocol for full list. A default `sasha` or `viridis` is chosen if empty.
-#' @param alpha Transparency as a single value or as another vector (recycled to fill) - if it is a vector, all values are scaled from 0:max(alpha) -> transparent:opaque. Single values must be in range 0-1. If NA no alpha hex is added.
-#' @param limits Colour scale limits as absolute range `c(0,10)`, or as percentile to remove outliers `c('0%','99.9%')`, or NA = all
-#' @param na_colour Colour to represent NA, default NA returns a colour of NA (invisible)
+#' @param alpha Transparency as a single value or as another vector (recycled to fill).
+#'              If it is a vector, all values are scaled from 0:max(alpha) meaning transparent:opaque.
+#'              Single values must be in range 0-1. If `NA` no alpha channel is added.
+#' @param limits Colour scale limits as absolute range `c(0,10)`, or as percentile to remove outliers `c('0%','99.9%')`, or `NA` = full range
+#' @param na_colour Colour to represent NA-values, default `NA` returns a colour of `NA` (thus not plotted)
 #' @param bias Skew to apply to colour-ramp (>1 increases resolution at low end, <1 at the high end)
 #' @param legend_len Continuous legend target size
 #' @export
@@ -98,9 +105,10 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
   pal_type = switch (class(x),
     'factor' = 'categorical',
     'character' = 'categorical',
+    'logical' = 'categorical',
     'integer' = 'continuous',
     'numeric' = 'continuous',
-    stop('Must be one of: factor, character, integer, numeric')
+    stop('Must be one of: factor, character, logical, integer, numeric')
   )
   # Get ready to replace these again at the end
   x_na = is.na(x)
@@ -123,7 +131,7 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
   }
 
   if(pal_type=='continuous'){
-    chosen_colour_ramp = colorRamp(get_set(set), space = 'Lab', bias = bias)
+    chosen_colour_ramp = colorRamp(get_set(set, default = 'viridis'), space = 'Lab', bias = bias)
     # Correct limits
     if(is.na(limits[1]))
       limits = range(x, na.rm = T)

@@ -1,5 +1,5 @@
 
-#' Helper to get a set by name
+#' Helper to get a set by name - will search all included lists ("pals."), then built-in, or just returns itself if already a vector
 get_set = function(set, default = 'turbo' ){
   if(set[1]=='')
     set = default
@@ -7,18 +7,24 @@ get_set = function(set, default = 'turbo' ){
   if(length(set)==1) # assume you've given a name of a set
     set_palette = c(pals.misc, pals.rcolorbrewer, pals.viridis)[[set]]
 
-  else # you've given your own palette vector
+  if(length(set)==1 & is.null(set_palette))  # try the built-in palette names
+    set_palette = palette.colors(palette = set)
+
+  if(length(set) > 1) # you've given your own palette vector
     set_palette = set
 
   return(set_palette)
 }
 
-#' Visualise Palettes
+#' Visualize Palettes
 #'
 #' Plot a list of palettes for comparison
 #' @examples
 #' pals_display(c(list(rainbow = rainbow(10), default = palette()), pals.misc, pals.rcolorbrewer[c('Paired','Set1','Set2')] ))
+#'
 #' pals_display(list(rainbow = rainbow(45)[30:1], turbo = pals.viridis$turbo ))
+#'
+#' pals_display(lapply(setNames(palette.pals(),palette.pals()), palette.colors, n=NULL))
 #'
 #' # Bit of fun ordering a list of palettes (MUST be same palette size)
 #' mat_cols = do.call(rbind, lapply(pals.rcolorbrewer[9:26], function(hex) as.vector(rgb2hsv(col2rgb(hex)))))
@@ -41,6 +47,9 @@ pals_display = function(pals = c(pals.misc,pals.rcolorbrewer,pals.viridis)){
   axis(side = 3, at = +0.5 + 1:length(pal_names), labels = pal_lengths, cex.axis = 0.8 )
   rect(xleft = x_coords, xright = x_coords+1, ybottom = y_coords, ytop = y_coords+1, col = colours, border = NA)
 }
+
+### BELOW are all imported colour palettes
+# Use pals.source naming - these are imported into global NAMESPACE so keep them easy to find
 
 pals.misc = list(
   # Sasha Trubetskoy

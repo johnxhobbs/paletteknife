@@ -42,7 +42,7 @@
 #'
 #' @examples
 #' plot(sunspots) # These time series are actually given in decimal years
-#'   autoaxis(side=3, major=50, major_grid='coral', minor=10, minor_grid=T, spacing=T)
+#'   autoaxis(side=3, major=50, major_grid='coral', minor=10, minor_grid=TRUE, spacing=TRUE)
 #'   autoaxis(side=4, major=11, minor=25, spacing=F, las=2, cex.axis=0.5, tck=0.02)
 #'
 #' plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3), rnorm(1e3), xlab='POSIXct', xaxt='n')
@@ -58,8 +58,18 @@
 #'   # Often prettier, label each bar inside the bar itself using text()
 #'   text(x = -1 + 1:length(mtcars$mpg), y = 1, pos = 4, labels = rownames(mtcars), srt = 90, cex = 0.7)
 #'   # autoaxis can still be used for adjusting the numeric scale
-#'   autoaxis(side=2, major=5, major_grid=T, minor=1, minor_grid=T)
+#'   autoaxis(side=2, major=5, major_grid=TRUE, minor=1, minor_grid=TRUE)
 #'
+#' @param side Side to add axis, 1 = bottom, 2 = left, 3 = top, 4 = right
+#' @param major Spacing of major axis ticks and labels (or approx. number of intervals if `spacing = FALSE`).
+#'              If the axis is date or time, use a interval specified in ?seq.POSIXt, such as 'sec' or 'week'
+#' @param major_grid Add gridlines corresponding to major axis ticks, `TRUE` to get default translucent black, otherwise colour (name or hex)
+#' @param spacing Should `major` and `minor` be interpreted as tick spacing (default) or approx. number of ticks
+#' @param minor Spacing (or number) of minor ticks (note, no label for minor). If given as a character string, it will pass to `seq.POSIXt`
+#' @param minor_grid Add gridlines for minor ticks, `TRUE` uses transparent black, otherwise colour string
+#' @param format Date or time format for major axis -- `major` must be a character string in this case
+#' @param tck Size of axis tick: minor axis will always take half the tick size
+#' @param ... Additional arguemnts passed to `axis()`, for example `las=2` for perpendicular labels
 #' @export
 autoaxis = function(side, major = NA, major_grid = FALSE, spacing = TRUE, minor = NA, minor_grid = FALSE, format = '%Y-%m-%d', tck=-0.03, ...){
   if(side %in% c(1,3))

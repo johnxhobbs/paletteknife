@@ -19,11 +19,13 @@ autocol(
 
 \item{set}{Colour set to use - see ?autocol for full list. A default \code{sasha} or \code{viridis} is chosen if empty.}
 
-\item{alpha}{Transparency as a single value or as another vector (recycled to fill) - if it is a vector, all values are scaled from 0:max(alpha) -> transparent:opaque. Single values must be in range 0-1. If NA no alpha hex is added.}
+\item{alpha}{Transparency as a single value or as another vector (recycled to fill).
+If it is a vector, all values are scaled from 0:max(alpha) meaning transparent:opaque.
+Single values must be in range 0-1. If \code{NA} no alpha channel is added.}
 
-\item{limits}{Colour scale limits as absolute range \code{c(0,10)}, or as percentile to remove outliers \code{c('0\%','99.9\%')}, or NA = all}
+\item{limits}{Colour scale limits as absolute range \code{c(0,10)}, or as percentile to remove outliers \code{c('0\%','99.9\%')}, or \code{NA} = full range}
 
-\item{na_colour}{Colour to represent NA, default NA returns a colour of NA (invisible)}
+\item{na_colour}{Colour to represent NA-values, default \code{NA} returns a colour of \code{NA} (thus not plotted)}
 
 \item{bias}{Skew to apply to colour-ramp (>1 increases resolution at low end, <1 at the high end)}
 
@@ -73,7 +75,7 @@ Colour sets built-in so far are:
 
 Custom limits can be specified, in two ways:
 \itemize{
-\item percentile limits \code{c('5\%','90\%')}: this is essential for clamping down on outliers which compress the colour scale
+\item percentile limits \code{c('5\%','90\%')}: this is useful for clamping down on outliers which distort the colour scale
 \item absolute limits \code{c(0,10)}: useful if multiple plots using the same range are required for cross-comparison
 \item default behaviour \code{limits = NA}: adjust to exactly fit input range
 }
@@ -93,8 +95,9 @@ plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width, 'PuBu
   autolegend('topleft', title = 'Petal.Width', ncol = 3)
 
 # Here we want a summary plot ordered by level, so need to create a colour vector to match
+# 'Alphabet' is a built-in colour set, see "palette.pals()"
 mixedbag = as.factor(sample(letters,1000,replace=T))
-  plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag)))
+  plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag), set='Alphabet'))
   autolegend('bottom', ncol = 9)
 
 # Maintain the order of strings
@@ -106,6 +109,10 @@ x=as.Date('2000-01-01')+0:100
   plot(x, pch=16, col=autocol(as.numeric(x)) )
   attr(.autocol_legend[[1]], 'class') <- class(x)
   autolegend()
+
+# Logical vectors can be plotted, but also trivial with default palette()
+plot(runif(4), col=autocol(c(T,F,F,T), set = c('red','black')), pch=16, cex=5)
+plot(runif(4), col=2-c(T,F,F,T), pch=16, cex=5)
 
 # Use the limits to remove outliers, useful for noisy extremes or if a narrow band of 'good' is wanted
 plot(as.numeric(treering),pch=16,col=autocol(as.numeric(treering),set='RdYlBu',limits=c(0.5,1.2)))
