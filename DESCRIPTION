@@ -1,6 +1,6 @@
 Package: paletteknife
 Title: Create Colour Scales And Legend From Continuous Or Categorical Vectors
-Version: 0.3.0
+Version: 0.4.0
 Authors@R: 
   person(given = "John",
          family = "Hobbs",

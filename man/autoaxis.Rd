@@ -7,12 +7,12 @@
 autoaxis(
   side,
   major = NA,
-  minor = NA,
+  major_grid = FALSE,
   spacing = TRUE,
+  minor = NA,
+  minor_grid = FALSE,
   format = "\%Y-\%m-\%d",
   tck = -0.03,
-  major_grid = FALSE,
-  minor_grid = FALSE,
   ...
 )
 }
@@ -48,11 +48,13 @@ or a colour. If \code{TRUE}, a transparent black is used by default.
 
 Any other options can be passed through to axis() directly (see ?axis), most
 notably \code{las = 2} to rotate the labels.
+
+This does NOT work well for barplot() categorical axis, for this continue to use
+the basic axis() function with custom labels, see examples.
 }
 \examples{
 plot(sunspots) # These time series are actually given in decimal years
-  autoaxis(side=3, major=50, minor=10, spacing=T, major_grid='coral', minor_grid=T)
-  autoaxis(side=2, minor=5) #
+  autoaxis(side=3, major=50, major_grid='coral', minor=10, minor_grid=T, spacing=T)
   autoaxis(side=4, major=11, minor=25, spacing=F, las=2, cex.axis=0.5, tck=0.02)
 
 plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3), rnorm(1e3), xlab='POSIXct', xaxt='n')
@@ -60,4 +62,14 @@ plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3), rnor
 
 plot(seq(as.Date('2013-02-01'),as.Date('2020-01-03'),length.out=1e3), rnorm(1e3), xlab='Date', xaxt='n')
   autoaxis(side=1, major='year', minor='quarter', format = '\%Y')
+
+# For barplot() use base functions - remember to set width=1, space=0 otherwise bars will not be plotted on integer x-coordinates
+barplot(mtcars$mpg, width = 1, space = 0, ylab = 'mpg')
+  # Adjust the x-axis down by 0.5 so that the tick is in centre of each bar
+  axis(side = 1, at = -0.5 + 1:length(mtcars$mpg), labels = rownames(mtcars), las = 2 )
+  # Often prettier, label each bar inside the bar itself using text()
+  text(x = -1 + 1:length(mtcars$mpg), y = 1, pos = 4, labels = rownames(mtcars), srt = 90, cex = 0.7)
+  # autoaxis can still be used for adjusting the numeric scale
+  autoaxis(side=2, major=5, major_grid=T, minor=1, minor_grid=T)
+
 }

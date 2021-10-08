@@ -82,3 +82,39 @@ The skew of the colourscale can be adjusted with \code{bias}, for example if \co
 has an exponential distribution, a bias value > 1 will bring out contrast at
 the low end.
 }
+\examples{
+# Try scales which include NA in both colour and alpha channel
+# Note, a crude fix to reverse the palette order, and changing the autolegend labels
+with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha = Ozone, na_colour = 'black'), pch=16, cex = sqrt(Wind) ))
+  .autocol_legend[[1]] = -.autocol_legend[[1]]
+  autolegend(bty = 'n', horiz = T)
+
+plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width, 'PuBuGn', alpha = 0.8, bias = 1.5, legend_len = 12), cex = 3, pch = 16 )
+  autolegend('topleft', title = 'Petal.Width', ncol = 3)
+
+# Here we want a summary plot ordered by level, so need to create a colour vector to match
+mixedbag = as.factor(sample(letters,1000,replace=T))
+  plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag)))
+  autolegend('bottom', ncol = 9)
+
+# Maintain the order of strings
+barplot(1:8, col=autocol(LETTERS[8:1]))
+  autolegend('topleft')
+
+# All colour scales must be string / number, so will require 'unclassing'
+x=as.Date('2000-01-01')+0:100
+  plot(x, pch=16, col=autocol(as.numeric(x)) )
+  attr(.autocol_legend[[1]], 'class') <- class(x)
+  autolegend()
+
+# Use the limits to remove outliers, useful for noisy extremes or if a narrow band of 'good' is wanted
+plot(as.numeric(treering),pch=16,col=autocol(as.numeric(treering),set='RdYlBu',limits=c(0.5,1.2)))
+
+outlier_data = airquality
+  outlier_data$Solar.R[1] = 1013
+  with(outlier_data, plot(Temp, col=autocol(x=Solar.R), pch=16, cex = sqrt(Wind) ))
+  autolegend('bottom',ncol=3)
+  with(outlier_data, plot(Temp, col=autocol(x=Solar.R, limits=c(0,400)), pch=16, cex = sqrt(Wind) ))
+  autolegend('bottom',ncol=3)
+
+}

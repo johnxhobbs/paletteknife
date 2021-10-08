@@ -3,7 +3,6 @@
 #'
 #' Create a vector of colours and associated legend for easier base plots
 #'
-#' @details
 #' Helper function for using colours in R's default `plot` and `legend`. Colours
 #' from built-in palettes are automatically scaled to return a vector of colours
 #' and a hidden `.autocol_legend` which contains the correct legend mapping for
@@ -65,15 +64,23 @@
 #'
 #' # Maintain the order of strings
 #' barplot(1:8, col=autocol(LETTERS[8:1]))
-#'   autolegend('topleft)
+#'   autolegend('topleft')
 #'
 #' # All colour scales must be string / number, so will require 'unclassing'
 #' x=as.Date('2000-01-01')+0:100
 #'   plot(x, pch=16, col=autocol(as.numeric(x)) )
 #'   attr(.autocol_legend[[1]], 'class') <- class(x)
 #'   autolegend()
-
-#' # Use the limits to remove outliers
+#'
+#' # Use the limits to remove outliers, useful for noisy extremes or if a narrow band of 'good' is wanted
+#' plot(as.numeric(treering),pch=16,col=autocol(as.numeric(treering),set='RdYlBu',limits=c(0.5,1.2)))
+#'
+#' outlier_data = airquality
+#'   outlier_data$Solar.R[1] = 1013
+#'   with(outlier_data, plot(Temp, col=autocol(x=Solar.R), pch=16, cex = sqrt(Wind) ))
+#'   autolegend('bottom',ncol=3)
+#'   with(outlier_data, plot(Temp, col=autocol(x=Solar.R, limits=c(0,400)), pch=16, cex = sqrt(Wind) ))
+#'   autolegend('bottom',ncol=3)
 #'
 #' @param x Vector to be mapped to colours
 #' @param set Colour set to use - see ?autocol for full list. A default `sasha` or `viridis` is chosen if empty.
@@ -100,13 +107,8 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
 
   if(pal_type=='categorical'){
 
-    if(set==''){
-      if(length(unique(x)) <= 12)
-        set = 'Paired'
-      else
-        set = 'sasha'
-    }
-    set_palette = get(set)
+    set_palette = get_set(set, default = 'sasha')
+
     if(class(x)=='character') x = factor(x, levels=unique(x))
     col_level = as.integer(as.factor(x)) %% length(set_palette)
     col_level[col_level==0] = length(set_palette)
@@ -121,8 +123,7 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
   }
 
   if(pal_type=='continuous'){
-    if(set=='') set = 'viridis'
-    chosen_colour_ramp = colorRamp(get(set), space = 'Lab', bias = bias)
+    chosen_colour_ramp = colorRamp(get_set(set), space = 'Lab', bias = bias)
     # Correct limits
     if(is.na(limits[1]))
       limits = range(x, na.rm = T)
@@ -196,7 +197,7 @@ autolegend = function(...){
 #' @param legend_len Continuous legend target size
 #' @export
 autopal = function(set, n = 30, limits = NA, bias = 1, legend_len = 6){
-  chosen_colour_ramp = colorRamp(get(set), space = 'Lab', bias = bias)
+  chosen_colour_ramp = colorRamp(get_set(set), space = 'Lab', bias = bias)
   if(!is.na(limits[1]))
     create_autolegend_data(limits = limits, chosen_colour_ramp = chosen_colour_ramp, legend_len = legend_len)
   palcols = rgb(chosen_colour_ramp(c(0,seq(0,1,length.out=n-2),1)), maxColorValue = 255)
