@@ -45,18 +45,22 @@
 #'   autoaxis(side=3, major=50, major_grid='coral', minor=10, minor_grid=TRUE, spacing=TRUE)
 #'   autoaxis(side=4, major=11, minor=25, spacing=F, las=2, cex.axis=0.5, tck=0.02)
 #'
-#' plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3), rnorm(1e3), xlab='POSIXct', xaxt='n')
+#' plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3),
+#'     rnorm(1e3), xlab='POSIXct', xaxt='n')
 #'   autoaxis(side=1, major='day', minor='hour', format = '%A')
 #'
-#' plot(seq(as.Date('2013-02-01'),as.Date('2020-01-03'),length.out=1e3), rnorm(1e3), xlab='Date', xaxt='n')
+#' plot(seq(as.Date('2013-02-01'),as.Date('2020-01-03'),length.out=1e3),
+#'     rnorm(1e3), xlab='Date', xaxt='n')
 #'   autoaxis(side=1, major='year', minor='quarter', format = '%Y')
 #'
-#' # For barplot() use base functions - remember to set width=1, space=0 otherwise bars will not be plotted on integer x-coordinates
+#' # For barplot() use base functions - remember to set width=1, space=0
+#' # otherwise bars will not be plotted on integer x-coordinates
 #' barplot(mtcars$mpg, width = 1, space = 0, ylab = 'mpg')
 #'   # Adjust the x-axis down by 0.5 so that the tick is in centre of each bar
 #'   axis(side = 1, at = -0.5 + 1:length(mtcars$mpg), labels = rownames(mtcars), las = 2 )
 #'   # Often prettier, label each bar inside the bar itself using text()
-#'   text(x = -1 + 1:length(mtcars$mpg), y = 1, pos = 4, labels = rownames(mtcars), srt = 90, cex = 0.7)
+#'   text(x = -1 + 1:length(mtcars$mpg), y = 1, pos = 4,
+#'     labels = rownames(mtcars), srt = 90, cex = 0.7)
 #'   # autoaxis can still be used for adjusting the numeric scale
 #'   autoaxis(side=2, major=5, major_grid=TRUE, minor=1, minor_grid=TRUE)
 #'

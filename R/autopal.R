@@ -49,11 +49,13 @@
 #' @examples
 #' # Try scales which include NA in both colour and alpha channel
 #' # Note, a crude fix to reverse the palette order, and changing the autolegend labels
-#' with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha = Ozone, na_colour = 'black'), pch=16, cex = sqrt(Wind) ))
+#' with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha = Ozone,
+#'     na_colour = 'black'), pch=16, cex = sqrt(Wind) ))
 #'   .autocol_legend[[1]] = -.autocol_legend[[1]]
 #'   autolegend(bty = 'n', horiz = T)
 #'
-#' plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width, 'PuBuGn', alpha = 0.8, bias = 1.5, legend_len = 12), cex = 3, pch = 16 )
+#' plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width,
+#'     set='PuBuGn', alpha = 0.8, bias = 1.5, legend_len = 12), cex = 3, pch = 16 )
 #'   autolegend('topleft', title = 'Petal.Width', ncol = 3)
 #'
 #' # Here we want a summary plot ordered by level, so need to create a colour vector to match
@@ -78,9 +80,11 @@
 #'
 #' # Use the limits to clip or augment the colour-scale
 #' layout(matrix(1:2))
-#'   plot(runif(10), col=autocol(1:10, limits = c(0,20)), pch=16, main='Low data')
-#'   plot(runif(10), col=autocol(c(100,20:12), limits = c(0,20)), pch=16, main='High data')
-#'   text(1,0.5,'This point has a \n value of 100 but  \n clipped to max \n colour = 20', pos=4, xpd = NA)
+#'   plot(runif(10), col=autocol(1:10, limits=c(0,20)), pch=16, main='Low data')
+#'   plot(runif(10), col=autocol(c(100,20:12), limits=c(0,20)), pch=16, main='High data')
+#'   text(1, 0.5, pos=4, xpd = NA,
+#'     'This point has a \n value of 100 but  \n
+#'     clipped to max \n colour == 20')
 #'   autolegend(horiz=TRUE)
 #'   layout(1)
 #'
@@ -170,13 +174,15 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
 #' autolegend('topright', ncol = 2, title = 'Legend')
 #' autolegend(horiz = T, bty = 'n') # Try clicking just under the plot title
 #'
-#' @param ... Arguments passed directly to `legend` - legend text and fill are taken automatically from hidden `.autocol_legend`
+#' @param ... Arguments passed directly to `legend` -- legend text and fill are taken
+#'            automatically from hidden `.autocol_legend`
 #' @export
 autolegend = function(...){
   if(!exists('.autocol_legend')) stop('Must call autocol(...) first to create .autocol_legend data')
 
   legend(..., locator(n=1), legend = .autocol_legend[[1]], fill = .autocol_legend[[2]], xpd = NA)
 }
+.autocol_legend = list('Warning: autocol() not called', NA) # Created on load to keep CMD CHECK happy
 
 #' Auto-Palette
 #'
@@ -190,12 +196,16 @@ autolegend = function(...){
 #' See ?autocol for list of all available colour sets.
 #'
 #' @examples
-#' image(volcano, col = autopal('RdYlGn', n=100, limits=c(50,200), bias = 1.5), breaks=seq(50,200,length.out=101) )
+#' image(volcano, col = autopal('RdYlGn', n=100, limits=c(50,200), bias = 1.5),
+#'     breaks=seq(50,200,length.out=101) )
 #'   autolegend()
+#'
 #' # Or using the slightly smarter filled.contour
-#' filled.contour(volcano, col = autopal('RdYlGn', n=20, limits=c(100,150)), levels = seq(50,200,length.out=21) )
+#' filled.contour(volcano, col = autopal('RdYlGn', n=20, limits=c(100,150)),
+#'   levels = seq(50,200,length.out=21) )
 #'
 #' @param set Colour set to use - see ?autocol for full list. A default `sasha` or `viridis` is chosen if empty.
+#' @param n Length of colour vector to return, must be at least 2
 #' @param limits Colour scale limits to pass to legend eg `c(0,10)` - if left as `NA` no autolegend will be generated
 #' @param bias Skew to apply to colour-ramp (>1 increases resolution at low end, <1 at the high end)
 #' @param legend_len Continuous legend target size

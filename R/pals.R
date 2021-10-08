@@ -1,5 +1,6 @@
 
-#' Helper to get a set by name - will search all included lists ("pals."), then built-in, or just returns itself if already a vector
+#' Helper to get a set by name - will search all included lists ("pals."),
+#' then built-in, or just returns itself if already a vector
 get_set = function(set, default = 'turbo' ){
   if(set[1]=='')
     set = default
