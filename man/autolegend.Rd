@@ -7,7 +7,8 @@
 autolegend(...)
 }
 \arguments{
-\item{...}{Arguments passed directly to \code{legend} - legend text and fill are taken automatically from hidden \code{.autocol_legend}}
+\item{...}{Arguments passed directly to \code{legend} -- legend text and fill are taken
+automatically from hidden \code{.autocol_legend}}
 }
 \description{
 Add a legend for the last autocol() set generated

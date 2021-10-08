@@ -16,6 +16,26 @@ autoaxis(
   ...
 )
 }
+\arguments{
+\item{side}{Side to add axis, 1 = bottom, 2 = left, 3 = top, 4 = right}
+
+\item{major}{Spacing of major axis ticks and labels (or approx. number of intervals if \code{spacing = FALSE}).
+If the axis is date or time, use a interval specified in ?seq.POSIXt, such as 'sec' or 'week'}
+
+\item{major_grid}{Add gridlines corresponding to major axis ticks, \code{TRUE} to get default translucent black, otherwise colour (name or hex)}
+
+\item{spacing}{Should \code{major} and \code{minor} be interpreted as tick spacing (default) or approx. number of ticks}
+
+\item{minor}{Spacing (or number) of minor ticks (note, no label for minor). If given as a character string, it will pass to \code{seq.POSIXt}}
+
+\item{minor_grid}{Add gridlines for minor ticks, \code{TRUE} uses transparent black, otherwise colour string}
+
+\item{format}{Date or time format for major axis -- \code{major} must be a character string in this case}
+
+\item{tck}{Size of axis tick: minor axis will always take half the tick size}
+
+\item{...}{Additional arguemnts passed to \code{axis()}, for example \code{las=2} for perpendicular labels}
+}
 \description{
 Overlay base plot axis with custom intervals
 }
@@ -54,22 +74,26 @@ the basic axis() function with custom labels, see examples.
 }
 \examples{
 plot(sunspots) # These time series are actually given in decimal years
-  autoaxis(side=3, major=50, major_grid='coral', minor=10, minor_grid=T, spacing=T)
+  autoaxis(side=3, major=50, major_grid='coral', minor=10, minor_grid=TRUE, spacing=TRUE)
   autoaxis(side=4, major=11, minor=25, spacing=F, las=2, cex.axis=0.5, tck=0.02)
 
-plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3), rnorm(1e3), xlab='POSIXct', xaxt='n')
+plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3),
+    rnorm(1e3), xlab='POSIXct', xaxt='n')
   autoaxis(side=1, major='day', minor='hour', format = '\%A')
 
-plot(seq(as.Date('2013-02-01'),as.Date('2020-01-03'),length.out=1e3), rnorm(1e3), xlab='Date', xaxt='n')
+plot(seq(as.Date('2013-02-01'),as.Date('2020-01-03'),length.out=1e3),
+    rnorm(1e3), xlab='Date', xaxt='n')
   autoaxis(side=1, major='year', minor='quarter', format = '\%Y')
 
-# For barplot() use base functions - remember to set width=1, space=0 otherwise bars will not be plotted on integer x-coordinates
+# For barplot() use base functions - remember to set width=1, space=0
+# otherwise bars will not be plotted on integer x-coordinates
 barplot(mtcars$mpg, width = 1, space = 0, ylab = 'mpg')
   # Adjust the x-axis down by 0.5 so that the tick is in centre of each bar
   axis(side = 1, at = -0.5 + 1:length(mtcars$mpg), labels = rownames(mtcars), las = 2 )
   # Often prettier, label each bar inside the bar itself using text()
-  text(x = -1 + 1:length(mtcars$mpg), y = 1, pos = 4, labels = rownames(mtcars), srt = 90, cex = 0.7)
+  text(x = -1 + 1:length(mtcars$mpg), y = 1, pos = 4,
+    labels = rownames(mtcars), srt = 90, cex = 0.7)
   # autoaxis can still be used for adjusting the numeric scale
-  autoaxis(side=2, major=5, major_grid=T, minor=1, minor_grid=T)
+  autoaxis(side=2, major=5, major_grid=TRUE, minor=1, minor_grid=TRUE)
 
 }

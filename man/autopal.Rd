@@ -7,9 +7,11 @@
 autopal(set, n = 30, limits = NA, bias = 1, legend_len = 6)
 }
 \arguments{
-\item{set}{Colour set to use - see ?autocol for full list. A default \code{sasha} or \code{viridis} is chosen if empty.}
+\item{set}{Colour set to use -- see ?autocol for full list. A default \code{sasha} or \code{viridis} is chosen if empty.}
 
-\item{limits}{Colour scale limits to pass to legend eg \code{c(0,10)} - if left as \code{NA} no autolegend will be generated}
+\item{n}{Length of colour vector to return, must be at least 2}
+
+\item{limits}{Colour scale limits to pass to legend eg \code{c(0,10)} -- if left as \code{NA} no autolegend will be generated}
 
 \item{bias}{Skew to apply to colour-ramp (>1 increases resolution at low end, <1 at the high end)}
 
@@ -27,9 +29,12 @@ the same colour range is needed across several plots.
 See ?autocol for list of all available colour sets.
 }
 \examples{
-image(volcano, col = autopal('RdYlGn', n=100, limits=c(50,200), bias = 1.5), breaks=seq(50,200,length.out=101) )
+image(volcano, col = autopal('RdYlGn', n=100, limits=c(50,200), bias = 1.5),
+    breaks=seq(50,200,length.out=101) )
   autolegend()
+
 # Or using the slightly smarter filled.contour
-filled.contour(volcano, col = autopal('RdYlGn', n=20, limits=c(100,150)), levels = seq(50,200,length.out=21) )
+filled.contour(volcano, col = autopal('RdYlGn', n=20, limits=c(100,150)),
+  levels = seq(50,200,length.out=21) )
 
 }

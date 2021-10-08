@@ -11,32 +11,34 @@
 #' A discrete palette is used for factor and character inputs whilst a
 #' continuous palette is used for integer and numeric.
 #'
-#' Colour sets built-in so far are:
+#' Colour sets built-in so far are held in lists starting `pals.` and can be
+#' visualized most easily with `pals_display()`. The `set` argument can be
+#' any of the colour set names listed here (such as 'magma'), or from `palette.pals()`,
+#' or finally as a custom-defined vector, such as `set = rainbow(5)`.
 #'
-#' - All of the continuous palette forked from the `viridisLite` package maintained by Simon Garnier.
+#' - **`pals.viridis`**
 #'
-#'   `cividis` `inferno` `magma` `mako` `plasma` `rocket`
-#'   `turbo` `viridis`
+#'    All of the continuous palette forked from the `viridisLite` package maintained by Simon Garnier.
+#'     - Contains: `cividis` `inferno` `magma` `mako` `plasma` `rocket` `turbo` `viridis`
 #'
-#' - All of the palettes included in RColorBrewer
-#'   - Categorical (size 8 or 9, `Paired` and `Set3` 12)
+#' - **`pals.rcolorbrewer`**
 #'
+#'   All of the palettes included in RColorBrewer
+#'   - Categorical:
 #'   `Accent` `Set1` `Set2` `Set3` `Paired` `Pastel1` `Pastel2` `Dark2`
 #'
-#'   - Continuous (in order of 'heat')
-#'
+#'   - Continuous:
 #'   `Greys` `Blues` `BuGn` `BuPu` `Greens` `GnBu` `PuBu` `Purples` `PuBuGn`
 #'   `YlGnBu` `YlGn`
 #'   `YlOrBr` `YlOrRd` `Oranges` `OrRd` `Reds` `RdPu` `PuRd`
 #'
-#'   - Divergent (first three go via yellow to form a rainbow palette)
-#'
+#'   - Divergent:
 #'   `Spectral` `RdYlBu` `RdYlGn`
 #'   `BrBG` `RdBu` `RdGy` `PiYG` `PRGn` `PuOr`
 #'
-#' - Sasha Trubetskoy  (2017): *List of 20 Simple, Distinct Colors*
+#' - **`pals.misc`**
 #'
-#'   `sasha`
+#'   - Sasha Trubetskoy  (2017): *List of 20 Simple, Distinct Colors*: `sasha`
 #'
 #' Custom limits can be specified using `c(0,10)`. This is useful if multiple
 #' plots using the same range are required for cross-comparison. Default
@@ -90,7 +92,7 @@
 #'
 #'
 #' @param x Vector to be mapped to colours
-#' @param set Colour set to use - see ?autocol for full list. A default `sasha` or `viridis` is chosen if empty.
+#' @param set Colour set to use -- see Details for full list. A default `sasha` or `viridis` is chosen if empty.
 #' @param alpha Transparency as a single value or as another vector (recycled to fill).
 #'              If it is a vector, all values are scaled from 0:max(alpha) meaning transparent:opaque.
 #'              Single values must be in range 0-1. If `NA` no alpha channel is added.
@@ -151,7 +153,7 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
   # Deal with any NA colours
   res_pal[x_na] = na_colour
 
-  # Deal with the alpha channel - this is the same for categorical and discrete
+  # Deal with the alpha channel -- this is the same for categorical and discrete
   # The values are mapped 0 (transparent) to 255 (solid), such that either 1.0
   # is solid, or whatever the maximum value is.
   # col2rgb() allows the res_pal so far to have colour names --> hex codes
@@ -204,9 +206,9 @@ autolegend = function(...){
 #' filled.contour(volcano, col = autopal('RdYlGn', n=20, limits=c(100,150)),
 #'   levels = seq(50,200,length.out=21) )
 #'
-#' @param set Colour set to use - see ?autocol for full list. A default `sasha` or `viridis` is chosen if empty.
+#' @param set Colour set to use -- see ?autocol for full list. A default `sasha` or `viridis` is chosen if empty.
 #' @param n Length of colour vector to return, must be at least 2
-#' @param limits Colour scale limits to pass to legend eg `c(0,10)` - if left as `NA` no autolegend will be generated
+#' @param limits Colour scale limits to pass to legend eg `c(0,10)` -- if left as `NA` no autolegend will be generated
 #' @param bias Skew to apply to colour-ramp (>1 increases resolution at low end, <1 at the high end)
 #' @param legend_len Continuous legend target size
 #' @export
@@ -219,7 +221,7 @@ autopal = function(set, n = 30, limits = NA, bias = 1, legend_len = 6){
 }
 
 create_autolegend_data = function(limits, chosen_colour_ramp, legend_len = 6){
-  # Make legend data - get pretty intervals and then cap ends to suitable decimal places
+  # Make legend data -- get pretty intervals and then cap ends to suitable decimal places
   legend_labels = pretty(limits, n = legend_len)
   longest_label = max(nchar(as.character(legend_labels)))
   legend_labels[1] = signif(limits[1], digits = longest_label)

@@ -17,13 +17,13 @@ autocol(
 \arguments{
 \item{x}{Vector to be mapped to colours}
 
-\item{set}{Colour set to use - see ?autocol for full list. A default \code{sasha} or \code{viridis} is chosen if empty.}
+\item{set}{Colour set to use -- see Details for full list. A default \code{sasha} or \code{viridis} is chosen if empty.}
 
 \item{alpha}{Transparency as a single value or as another vector (recycled to fill).
 If it is a vector, all values are scaled from 0:max(alpha) meaning transparent:opaque.
 Single values must be in range 0-1. If \code{NA} no alpha channel is added.}
 
-\item{limits}{Colour scale limits as absolute range \code{c(0,10)}, or as percentile to remove outliers \code{c('0\%','99.9\%')}, or \code{NA} = full range}
+\item{limits}{Colour scale limits as absolute range \code{c(0,10)} or \code{NA} = full range}
 
 \item{na_colour}{Colour to represent NA-values, default \code{NA} returns a colour of \code{NA} (thus not plotted)}
 
@@ -43,42 +43,40 @@ and a hidden \code{.autocol_legend} which contains the correct legend mapping fo
 A discrete palette is used for factor and character inputs whilst a
 continuous palette is used for integer and numeric.
 
-Colour sets built-in so far are:
+Colour sets built-in so far are held in lists starting \code{pals.} and can be
+visualized most easily with \code{pals_display()}. The \code{set} argument can be
+any of the colour set names listed here (such as 'magma'), or from \code{palette.pals()},
+or finally as a custom-defined vector, such as \code{set = rainbow(5)}.
 \itemize{
-\item All of the continuous palette forked from the \code{viridisLite} package maintained by Simon Garnier.
+\item \strong{\code{pals.viridis}}
 
-\code{cividis} \code{inferno} \code{magma} \code{mako} \code{plasma} \code{rocket}
-\code{turbo} \code{viridis}
-\item All of the palettes included in RColorBrewer
+All of the continuous palette forked from the \code{viridisLite} package maintained by Simon Garnier.
 \itemize{
-\item Categorical (size 8 or 9, \code{Paired} and \code{Set3} 12)
+\item Contains: \code{cividis} \code{inferno} \code{magma} \code{mako} \code{plasma} \code{rocket} \code{turbo} \code{viridis}
 }
+\item \strong{\code{pals.rcolorbrewer}}
 
+All of the palettes included in RColorBrewer
+\itemize{
+\item Categorical:
 \code{Accent} \code{Set1} \code{Set2} \code{Set3} \code{Paired} \code{Pastel1} \code{Pastel2} \code{Dark2}
-\itemize{
-\item Continuous (in order of 'heat')
-}
-
+\item Continuous:
 \code{Greys} \code{Blues} \code{BuGn} \code{BuPu} \code{Greens} \code{GnBu} \code{PuBu} \code{Purples} \code{PuBuGn}
 \code{YlGnBu} \code{YlGn}
 \code{YlOrBr} \code{YlOrRd} \code{Oranges} \code{OrRd} \code{Reds} \code{RdPu} \code{PuRd}
-\itemize{
-\item Divergent (first three go via yellow to form a rainbow palette)
-}
-
+\item Divergent:
 \code{Spectral} \code{RdYlBu} \code{RdYlGn}
 \code{BrBG} \code{RdBu} \code{RdGy} \code{PiYG} \code{PRGn} \code{PuOr}
-\item Sasha Trubetskoy  (2017): \emph{List of 20 Simple, Distinct Colors}
-
-\code{sasha}
 }
-
-Custom limits can be specified, in two ways:
+\item \strong{\code{pals.misc}}
 \itemize{
-\item percentile limits \code{c('5\%','90\%')}: this is useful for clamping down on outliers which distort the colour scale
-\item absolute limits \code{c(0,10)}: useful if multiple plots using the same range are required for cross-comparison
-\item default behaviour \code{limits = NA}: adjust to exactly fit input range
+\item Sasha Trubetskoy  (2017): \emph{List of 20 Simple, Distinct Colors}: \code{sasha}
 }
+}
+
+Custom limits can be specified using \code{c(0,10)}. This is useful if multiple
+plots using the same range are required for cross-comparison. Default
+behaviour (\code{limits = NA}) sets the range to exactly fit.
 
 The skew of the colourscale can be adjusted with \code{bias}, for example if \code{x}
 has an exponential distribution, a bias value > 1 will bring out contrast at
@@ -87,11 +85,13 @@ the low end.
 \examples{
 # Try scales which include NA in both colour and alpha channel
 # Note, a crude fix to reverse the palette order, and changing the autolegend labels
-with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha = Ozone, na_colour = 'black'), pch=16, cex = sqrt(Wind) ))
+with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha = Ozone,
+    na_colour = 'black'), pch=16, cex = sqrt(Wind) ))
   .autocol_legend[[1]] = -.autocol_legend[[1]]
   autolegend(bty = 'n', horiz = T)
 
-plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width, 'PuBuGn', alpha = 0.8, bias = 1.5, legend_len = 12), cex = 3, pch = 16 )
+plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width,
+    set='PuBuGn', alpha = 0.8, bias = 1.5, legend_len = 12), cex = 3, pch = 16 )
   autolegend('topleft', title = 'Petal.Width', ncol = 3)
 
 # Here we want a summary plot ordered by level, so need to create a colour vector to match
@@ -114,14 +114,15 @@ x=as.Date('2000-01-01')+0:100
 plot(runif(4), col=autocol(c(T,F,F,T), set = c('red','black')), pch=16, cex=5)
 plot(runif(4), col=2-c(T,F,F,T), pch=16, cex=5)
 
-# Use the limits to remove outliers, useful for noisy extremes or if a narrow band of 'good' is wanted
-plot(as.numeric(treering),pch=16,col=autocol(as.numeric(treering),set='RdYlBu',limits=c(0.5,1.2)))
+# Use the limits to clip or augment the colour-scale
+layout(matrix(1:2))
+  plot(runif(10), col=autocol(1:10, limits=c(0,20)), pch=16, main='Low data')
+  plot(runif(10), col=autocol(c(100,20:12), limits=c(0,20)), pch=16, main='High data')
+  text(1, 0.5, pos=4, xpd = NA,
+    'This point has a \n value of 100 but  \n
+    clipped to max \n colour == 20')
+  autolegend(horiz=TRUE)
+  layout(1)
 
-outlier_data = airquality
-  outlier_data$Solar.R[1] = 1013
-  with(outlier_data, plot(Temp, col=autocol(x=Solar.R), pch=16, cex = sqrt(Wind) ))
-  autolegend('bottom',ncol=3)
-  with(outlier_data, plot(Temp, col=autocol(x=Solar.R, limits=c(0,400)), pch=16, cex = sqrt(Wind) ))
-  autolegend('bottom',ncol=3)
 
 }

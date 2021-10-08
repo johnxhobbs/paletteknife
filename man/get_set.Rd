@@ -2,10 +2,12 @@
 % Please edit documentation in R/pals.R
 \name{get_set}
 \alias{get_set}
-\title{Helper to get a set by name - will search all included lists ("pals."), then built-in, or just returns itself if already a vector}
+\title{Helper to get a set by name - will search all included lists ("pals."),
+then built-in, or just returns itself if already a vector}
 \usage{
 get_set(set, default = "turbo")
 }
 \description{
-Helper to get a set by name - will search all included lists ("pals."), then built-in, or just returns itself if already a vector
+Helper to get a set by name - will search all included lists ("pals."),
+then built-in, or just returns itself if already a vector
 }
