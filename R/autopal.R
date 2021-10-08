@@ -38,10 +38,9 @@
 #'
 #'   `sasha`
 #'
-#' Custom limits can be specified, in two ways:
-#'   - percentile limits `c('5%','90%')`: this is useful for clamping down on outliers which distort the colour scale
-#'   - absolute limits `c(0,10)`: useful if multiple plots using the same range are required for cross-comparison
-#'   - default behaviour `limits = NA`: adjust to exactly fit input range
+#' Custom limits can be specified using `c(0,10)`. This is useful if multiple
+#' plots using the same range are required for cross-comparison. Default
+#' behaviour (`limits = NA`) sets the range to exactly fit.
 #'
 #' The skew of the colourscale can be adjusted with `bias`, for example if `x`
 #' has an exponential distribution, a bias value > 1 will bring out contrast at
@@ -77,22 +76,21 @@
 #' plot(runif(4), col=autocol(c(T,F,F,T), set = c('red','black')), pch=16, cex=5)
 #' plot(runif(4), col=2-c(T,F,F,T), pch=16, cex=5)
 #'
-#' # Use the limits to remove outliers, useful for noisy extremes or if a narrow band of 'good' is wanted
-#' plot(as.numeric(treering),pch=16,col=autocol(as.numeric(treering),set='RdYlBu',limits=c(0.5,1.2)))
+#' # Use the limits to clip or augment the colour-scale
+#' layout(matrix(1:2))
+#'   plot(runif(10), col=autocol(1:10, limits = c(0,20)), pch=16, main='Low data')
+#'   plot(runif(10), col=autocol(c(100,20:12), limits = c(0,20)), pch=16, main='High data')
+#'   text(1,0.5,'This point has a \n value of 100 but  \n clipped to max \n colour = 20', pos=4, xpd = NA)
+#'   autolegend(horiz=TRUE)
+#'   layout(1)
 #'
-#' outlier_data = airquality
-#'   outlier_data$Solar.R[1] = 1013
-#'   with(outlier_data, plot(Temp, col=autocol(x=Solar.R), pch=16, cex = sqrt(Wind) ))
-#'   autolegend('bottom',ncol=3)
-#'   with(outlier_data, plot(Temp, col=autocol(x=Solar.R, limits=c(0,400)), pch=16, cex = sqrt(Wind) ))
-#'   autolegend('bottom',ncol=3)
 #'
 #' @param x Vector to be mapped to colours
 #' @param set Colour set to use - see ?autocol for full list. A default `sasha` or `viridis` is chosen if empty.
 #' @param alpha Transparency as a single value or as another vector (recycled to fill).
 #'              If it is a vector, all values are scaled from 0:max(alpha) meaning transparent:opaque.
 #'              Single values must be in range 0-1. If `NA` no alpha channel is added.
-#' @param limits Colour scale limits as absolute range `c(0,10)`, or as percentile to remove outliers `c('0%','99.9%')`, or `NA` = full range
+#' @param limits Colour scale limits as absolute range `c(0,10)` or `NA` = full range
 #' @param na_colour Colour to represent NA-values, default `NA` returns a colour of `NA` (thus not plotted)
 #' @param bias Skew to apply to colour-ramp (>1 increases resolution at low end, <1 at the high end)
 #' @param legend_len Continuous legend target size
@@ -135,8 +133,6 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
     # Correct limits
     if(is.na(limits[1]))
       limits = range(x, na.rm = T)
-    if(is.character(limits))
-      limits = quantile(x = x, probs = as.numeric(gsub('[^0-9\\.]','',limits))/100)
 
     create_autolegend_data(limits = limits, chosen_colour_ramp = chosen_colour_ramp, legend_len = legend_len)
 
