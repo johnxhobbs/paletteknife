@@ -75,7 +75,7 @@ the basic axis() function with custom labels, see examples.
 \examples{
 plot(sunspots) # These time series are actually given in decimal years
   autoaxis(side=3, major=50, major_grid='coral', minor=10, minor_grid=TRUE, spacing=TRUE)
-  autoaxis(side=4, major=11, minor=25, spacing=F, las=2, cex.axis=0.5, tck=0.02)
+  autoaxis(side=4, major=11, minor=25, spacing=FALSE, las=2, cex.axis=0.5, tck=0.02)
 
 plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3),
     rnorm(1e3), xlab='POSIXct', xaxt='n')

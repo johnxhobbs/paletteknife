@@ -1,7 +1,11 @@
 
 #' Helper to get a set by name - will search all included lists ("pals."),
 #' then built-in, or just returns itself if already a vector
-get_set = function(set, default = 'turbo' ){
+#' @param set Character string of single palette name or a vector of colours
+#' @param default What to use if an empty string is passed (the default case)
+#' @import graphics
+#' @import grDevices
+get_set = function(set = '', default = 'turbo' ){
   if(set[1]=='')
     set = default
 
@@ -17,21 +21,27 @@ get_set = function(set, default = 'turbo' ){
   return(set_palette)
 }
 
-#' Visualize Palettes
+#' Built-in Paletteknife Palettes
 #'
 #' Plot a list of palettes for comparison
+#'
 #' @examples
-#' pals_display(c(list(rainbow = rainbow(10), default = palette()), pals.misc, pals.rcolorbrewer[c('Paired','Set1','Set2')] ))
+#' pals_display(c(list(rainbow = rainbow(10), default = palette()),
+#'                pals.misc, pals.rcolorbrewer[c('Paired','Set1','Set2')] ))
 #'
 #' pals_display(list(rainbow = rainbow(45)[30:1], turbo = pals.viridis$turbo ))
 #'
 #' pals_display(lapply(setNames(palette.pals(),palette.pals()), palette.colors, n=NULL))
 #'
 #' # Bit of fun ordering a list of palettes (MUST be same palette size)
-#' mat_cols = do.call(rbind, lapply(pals.rcolorbrewer[9:26], function(hex) as.vector(rgb2hsv(col2rgb(hex)))))
+#' mat_cols = do.call(rbind, lapply(pals.rcolorbrewer[9:26],
+#'                           function(hex) as.vector(rgb2hsv(col2rgb(hex)))))
 #' pals_display(pals.rcolorbrewer[9:26][hclust(dist(mat_cols))$order])
 #'
 #' @param pals Named list of palettes (colour vectors)
+#'
+#' @import graphics
+#' @import grDevices
 #' @export
 pals_display = function(pals = c(pals.misc,pals.rcolorbrewer,pals.viridis)){
   pal_names = names(pals)
@@ -49,15 +59,20 @@ pals_display = function(pals = c(pals.misc,pals.rcolorbrewer,pals.viridis)){
   rect(xleft = x_coords, xright = x_coords+1, ybottom = y_coords, ytop = y_coords+1, col = colours, border = NA)
 }
 
-### BELOW are all imported colour palettes
-# Use pals.source naming - these are imported into global NAMESPACE so keep them easy to find
 
+### BELOW are all imported colour palettes
+# Use "pals.source" naming - these are imported into global NAMESPACE so keep them easy to find
+
+#' @rdname autocol
+#' @export
 pals.misc = list(
   # Sasha Trubetskoy
   # List of 20 Simple, Distinct Colors, 2017
   sasha = c('#E6194B','#3CB44B','#FFE119','#0082C8','#F58230','#911EB4','#46F0F0','#F032E6','#D2F53C','#FABED4','#008080','#DCBEFF','#AA6E28','#FFFAC8','#800000','#AAFFC3','#808000','#FFD7B4','#000080','#808080','#000000')
 )
 
+#' @rdname autocol
+#' @export
 pals.viridis = list(
   turbo  =  c('#30123BFF','#3A2C78FF','#4145AAFF','#455DD1FF','#4773EBFF','#458AFCFF','#3B9FFDFF','#2DB6F1FF','#1FCADCFF','#18DBC5FF','#1FE9AFFF','#34F395FF','#54FA78FF','#76FE5BFF','#96FE44FF','#AFFA37FF','#C5F034FF','#DAE336FF','#EBD239FF','#F7C13AFF','#FDAC34FF','#FE942AFF','#F97A1EFF','#F25F14FF','#E7490CFF','#D83706FF','#C62703FF','#B11901FF','#970E01FF','#7A0403FF'),
   cividis = c('#00204DFF','#00275CFF','#002C6BFF','#00326FFF','#12386DFF','#263F6CFF','#34456BFF','#3F4C6BFF','#48526BFF','#51586CFF','#595F6DFF','#62656FFF','#6A6C71FF','#717174FF','#787877FF','#817F79FF','#898679FF','#918C78FF','#9A9377FF','#A39A76FF','#ADA274FF','#B6A971FF','#BFB06EFF','#C8B86AFF','#D2C066FF','#DCC860FF','#E6D159FF','#F0D852FF','#FAE149FF','#FFEA46FF'),
@@ -69,6 +84,8 @@ pals.viridis = list(
   rocket =  c('#03051AFF','#0E0B22FF','#1B112BFF','#271534FF','#34193DFF','#421B45FF','#501D4CFF','#5D1F52FF','#6C1F56FF','#7A1F59FF','#891E5BFF','#981B5BFF','#A7185AFF','#B51657FF','#C41753FF','#D11F4CFF','#DC2A46FF','#E43841FF','#EB493EFF','#EF5A41FF','#F26B49FF','#F47B55FF','#F58A62FF','#F59A70FF','#F6A880FF','#F6B691FF','#F7C3A3FF','#F7D0B6FF','#F9DDC9FF','#FAEBDDFF')
 )
 
+#' @rdname autocol
+#' @export
 pals.rcolorbrewer = list(
   Accent = c('#7FC97F','#BEAED4','#FDC086','#FFFF99','#386CB0','#F0027F','#BF5B17','#666666'),
   Dark2 = c('#1B9E77','#D95F02','#7570B3','#E7298A','#66A61E','#E6AB02','#A6761D','#666666'),
@@ -108,3 +125,4 @@ pals.rcolorbrewer = list(
   RdYlGn = c('#A50026','#D73027','#F46D43','#FDAE61','#FEE08B','#FFFFBF','#D9EF8B','#A6D96A','#66BD63','#1A9850','#006837'),
   Spectral = c('#9E0142','#D53E4F','#F46D43','#FDAE61','#FEE08B','#FFFFBF','#E6F598','#ABDDA4','#66C2A5','#3288BD','#5E4FA2')
 )
+

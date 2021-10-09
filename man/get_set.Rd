@@ -5,7 +5,12 @@
 \title{Helper to get a set by name - will search all included lists ("pals."),
 then built-in, or just returns itself if already a vector}
 \usage{
-get_set(set, default = "turbo")
+get_set(set = "", default = "turbo")
+}
+\arguments{
+\item{set}{Character string of single palette name or a vector of colours}
+
+\item{default}{What to use if an empty string is passed (the default case)}
 }
 \description{
 Helper to get a set by name - will search all included lists ("pals."),

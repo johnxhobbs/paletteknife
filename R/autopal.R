@@ -16,6 +16,8 @@
 #' any of the colour set names listed here (such as 'magma'), or from `palette.pals()`,
 #' or finally as a custom-defined vector, such as `set = rainbow(5)`.
 #'
+#' The current lists of palettes included with paletteknife all being with `pal.`
+#'
 #' - **`pals.viridis`**
 #'
 #'    All of the continuous palette forked from the `viridisLite` package maintained by Simon Garnier.
@@ -54,7 +56,9 @@
 #' with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha = Ozone,
 #'     na_colour = 'black'), pch=16, cex = sqrt(Wind) ))
 #'   .autocol_legend[[1]] = -.autocol_legend[[1]]
-#'   autolegend(bty = 'n', horiz = T)
+#'   autolegend('bottom', inset = 1, bty = 'n', horiz = TRUE)
+#'   # Note inset=1 draws on opposite side ie above not below plot area
+#'   # Also try simplest "autolegend()" for click-to-draw
 #'
 #' plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width,
 #'     set='PuBuGn', alpha = 0.8, bias = 1.5, legend_len = 12), cex = 3, pch = 16 )
@@ -62,34 +66,32 @@
 #'
 #' # Here we want a summary plot ordered by level, so need to create a colour vector to match
 #' # 'Alphabet' is a built-in colour set, see "palette.pals()"
-#' mixedbag = as.factor(sample(letters,1000,replace=T))
+#' mixedbag = as.factor(sample(letters,1000,replace=TRUE))
 #'   plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag), set='Alphabet'))
-#'   autolegend('bottom', ncol = 9)
+#'   autolegend('bottom', ncol = 9, cex = 0.7)
 #'
 #' # Maintain the order of strings
 #' barplot(1:8, col=autocol(LETTERS[8:1]))
 #'   autolegend('topleft')
 #'
 #' # All colour scales must be string / number, so will require 'unclassing'
-#' x=as.Date('2000-01-01')+0:100
-#'   plot(x, pch=16, col=autocol(as.numeric(x)) )
-#'   attr(.autocol_legend[[1]], 'class') <- class(x)
-#'   autolegend()
-#'
-#' # Logical vectors can be plotted, but also trivial with default palette()
-#' plot(runif(4), col=autocol(c(T,F,F,T), set = c('red','black')), pch=16, cex=5)
-#' plot(runif(4), col=2-c(T,F,F,T), pch=16, cex=5)
+#' mydates = as.Date('2000-01-01')+0:100
+#'   plot(mydates, pch=16, col=autocol(as.numeric(mydates)) )
+#'   attr(.autocol_legend[[1]], 'class') <- class(mydates)
+#'   autolegend(x = 0, y = mydates[100], title = 'My Dates')
 #'
 #' # Use the limits to clip or augment the colour-scale
 #' layout(matrix(1:2))
-#'   plot(runif(10), col=autocol(1:10, limits=c(0,20)), pch=16, main='Low data')
-#'   plot(runif(10), col=autocol(c(100,20:12), limits=c(0,20)), pch=16, main='High data')
+#'   plot(runif(10), col=autocol(1:10, limits=c(0,20)), pch=16,
+#'     main='Data split over two plots with same scale')
+#'   plot(runif(10), col=autocol(c(100,20:12), limits=c(0,20)), pch=16)
 #'   text(1, 0.5, pos=4, xpd = NA,
-#'     'This point has a \n value of 100 but  \n
-#'     clipped to max \n colour == 20')
-#'   autolegend(horiz=TRUE)
+#' 'This point has a
+#' value of 100 but
+#' clipped to max
+#' colour == 20')
+#'   autolegend('bottom', inset = 1, horiz = TRUE) # Draws above!
 #'   layout(1)
-#'
 #'
 #' @param x Vector to be mapped to colours
 #' @param set Colour set to use -- see Details for full list. A default `sasha` or `viridis` is chosen if empty.
@@ -100,6 +102,9 @@
 #' @param na_colour Colour to represent NA-values, default `NA` returns a colour of `NA` (thus not plotted)
 #' @param bias Skew to apply to colour-ramp (>1 increases resolution at low end, <1 at the high end)
 #' @param legend_len Continuous legend target size
+#'
+#' @import graphics
+#' @import grDevices
 #' @export
 autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 1, legend_len = 6){
   # Sanitise the input arguments
@@ -138,7 +143,7 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
     chosen_colour_ramp = colorRamp(get_set(set, default = 'viridis'), space = 'Lab', bias = bias)
     # Correct limits
     if(is.na(limits[1]))
-      limits = range(x, na.rm = T)
+      limits = range(x, na.rm = TRUE)
 
     create_autolegend_data(limits = limits, chosen_colour_ramp = chosen_colour_ramp, legend_len = legend_len)
 
@@ -158,9 +163,9 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
   # is solid, or whatever the maximum value is.
   # col2rgb() allows the res_pal so far to have colour names --> hex codes
   if(!is.na(alpha[1])){
-    max_alpha = if(length(alpha)==1) 1 else max(alpha,na.rm=T)
-    alpha = pmax(0, alpha, na.rm = T) # Negative alpha and NA are both turned invisible
-    res_pal = rgb(t(col2rgb( res_pal )), alpha=255*alpha/max_alpha, maxColorValue = 255 )
+    max_alpha = if(length(alpha)==1) 1 else max(alpha,na.rm=TRUE)
+    alpha = pmax(0, alpha, na.rm=TRUE) # Negative alpha and NA are both turned invisible
+    res_pal = rgb(t(col2rgb( res_pal )), alpha=255*alpha/max_alpha, maxColorValue=255 )
     }
   return(res_pal)
 }
@@ -170,29 +175,50 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
 #' Add a legend for the last autocol() set generated
 #'
 #' If no location (such as 'bottom') is given, then it calls the locator() crosshairs
-#' so the position of the legend can be picked interactively.
+#' so the position of the legend can be picked interactively. All arguments are passed
+#' to legend(), see ?legend for a full list.
+#'
+#' Legend labels and fill are both generated by autopal() and autocol() and stored in
+#' the hidden object `.autocol_legend` which can be manipulated if needs be.
+#'
+#' See examples in ?autocol for plot + legend.
 #'
 #' @examples
-#' autolegend('topright', ncol = 2, title = 'Legend')
-#' autolegend(horiz = T, bty = 'n') # Try clicking just under the plot title
+#' # Simplest version: click-to-draw with locator()
+#' plot(1:10, pch=16, col=autocol(1:10, 'Blues', legend_len = 5))
+#' # autolegend() # Try me!
+#'
+#' # Other neat versions -- note ?legend
+#' autolegend(x=6, y=4, ncol=2, title='Draw at (6,4)')
+#' autolegend('topleft', title='topleft', ncol=2, bty='n')
+#' autolegend('bottom', inset=1, horiz=TRUE, bty='n')
+#'
+#' # Manipulate the legend text, for example with format()
+#' heatmap(as.matrix(eurodist), col=autopal('turbo', limits=range(eurodist)) )
+#' .autocol_legend[[1]] = format(.autocol_legend[[1]],big.mark=',')
+#' autolegend('bottom', inset=1, horiz=TRUE, title='Misleading miles between cities')
 #'
 #' @param ... Arguments passed directly to `legend` -- legend text and fill are taken
 #'            automatically from hidden `.autocol_legend`
+#'
+#' @import graphics
+#' @import grDevices
 #' @export
 autolegend = function(...){
   if(!exists('.autocol_legend')) stop('Must call autocol(...) first to create .autocol_legend data')
 
+  # Possible TODO: add col=.autocol_legend[[2]] and omit fill= if pch= is passed
+
   legend(..., locator(n=1), legend = .autocol_legend[[1]], fill = .autocol_legend[[2]], xpd = NA)
 }
-.autocol_legend = list('Warning: autocol() not called', NA) # Created on load to keep CMD CHECK happy
 
 #' Auto-Palette
 #'
 #' Return a palette vector from one of the built-in sets
 #'
 #' This can be used where a palette is provided rather than a mapped colour
-#' vector, for example image(). The limits can be specified for the `autolegend`
-#' generated every time a new palette is made.
+#' vector, for example image(). The limits must be specified for the `autolegend`
+#' to be generated for the new palette.
 #' Custom colour limits can be set using `breaks` or `levels` (see examples) if
 #' the same colour range is needed across several plots.
 #' See ?autocol for list of all available colour sets.
@@ -200,7 +226,7 @@ autolegend = function(...){
 #' @examples
 #' image(volcano, col = autopal('RdYlGn', n=100, limits=c(50,200), bias = 1.5),
 #'     breaks=seq(50,200,length.out=101) )
-#'   autolegend()
+#'   autolegend('bottom', inset = 1, ncol = 5)
 #'
 #' # Or using the slightly smarter filled.contour
 #' filled.contour(volcano, col = autopal('RdYlGn', n=20, limits=c(100,150)),
@@ -211,6 +237,9 @@ autolegend = function(...){
 #' @param limits Colour scale limits to pass to legend eg `c(0,10)` -- if left as `NA` no autolegend will be generated
 #' @param bias Skew to apply to colour-ramp (>1 increases resolution at low end, <1 at the high end)
 #' @param legend_len Continuous legend target size
+#'
+#' @import graphics
+#' @import grDevices
 #' @export
 autopal = function(set, n = 30, limits = NA, bias = 1, legend_len = 6){
   chosen_colour_ramp = colorRamp(get_set(set), space = 'Lab', bias = bias)
@@ -220,6 +249,8 @@ autopal = function(set, n = 30, limits = NA, bias = 1, legend_len = 6){
   return(palcols)
 }
 
+#' @import graphics
+#' @import grDevices
 create_autolegend_data = function(limits, chosen_colour_ramp, legend_len = 6){
   # Make legend data -- get pretty intervals and then cap ends to suitable decimal places
   legend_labels = pretty(limits, n = legend_len)

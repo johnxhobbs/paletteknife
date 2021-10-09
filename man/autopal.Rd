@@ -22,8 +22,8 @@ Return a palette vector from one of the built-in sets
 }
 \details{
 This can be used where a palette is provided rather than a mapped colour
-vector, for example image(). The limits can be specified for the \code{autolegend}
-generated every time a new palette is made.
+vector, for example image(). The limits must be specified for the \code{autolegend}
+to be generated for the new palette.
 Custom colour limits can be set using \code{breaks} or \code{levels} (see examples) if
 the same colour range is needed across several plots.
 See ?autocol for list of all available colour sets.
@@ -31,7 +31,7 @@ See ?autocol for list of all available colour sets.
 \examples{
 image(volcano, col = autopal('RdYlGn', n=100, limits=c(50,200), bias = 1.5),
     breaks=seq(50,200,length.out=101) )
-  autolegend()
+  autolegend('bottom', inset = 1, ncol = 5)
 
 # Or using the slightly smarter filled.contour
 filled.contour(volcano, col = autopal('RdYlGn', n=20, limits=c(100,150)),

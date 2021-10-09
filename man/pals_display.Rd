@@ -2,7 +2,7 @@
 % Please edit documentation in R/pals.R
 \name{pals_display}
 \alias{pals_display}
-\title{Visualize Palettes}
+\title{Built-in Paletteknife Palettes}
 \usage{
 pals_display(pals = c(pals.misc, pals.rcolorbrewer, pals.viridis))
 }
@@ -13,14 +13,16 @@ pals_display(pals = c(pals.misc, pals.rcolorbrewer, pals.viridis))
 Plot a list of palettes for comparison
 }
 \examples{
-pals_display(c(list(rainbow = rainbow(10), default = palette()), pals.misc, pals.rcolorbrewer[c('Paired','Set1','Set2')] ))
+pals_display(c(list(rainbow = rainbow(10), default = palette()),
+               pals.misc, pals.rcolorbrewer[c('Paired','Set1','Set2')] ))
 
 pals_display(list(rainbow = rainbow(45)[30:1], turbo = pals.viridis$turbo ))
 
 pals_display(lapply(setNames(palette.pals(),palette.pals()), palette.colors, n=NULL))
 
 # Bit of fun ordering a list of palettes (MUST be same palette size)
-mat_cols = do.call(rbind, lapply(pals.rcolorbrewer[9:26], function(hex) as.vector(rgb2hsv(col2rgb(hex)))))
+mat_cols = do.call(rbind, lapply(pals.rcolorbrewer[9:26],
+                          function(hex) as.vector(rgb2hsv(col2rgb(hex)))))
 pals_display(pals.rcolorbrewer[9:26][hclust(dist(mat_cols))$order])
 
 }
