@@ -51,46 +51,50 @@
 #' the low end.
 #'
 #' @examples
-#' # Try scales which include NA in both colour and alpha channel
-#' # Note, a crude fix to reverse the palette order, and changing the autolegend labels
-#' with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha = Ozone,
-#'     na_colour = 'black'), pch=16, cex = sqrt(Wind) ))
-#'   .autocol_legend[[1]] = -.autocol_legend[[1]]
-#'   autolegend('bottom', inset = 1, bty = 'n', horiz = TRUE)
-#'   # Note inset=1 draws on opposite side ie above not below plot area
+#' plot(iris$Sepal.Length, iris$Petal.Length, cex=3, pch=16,
+#'     col=autocol(iris$Petal.Width, set='PuBuGn', alpha=0.8, legend_len=12) )
+#'   autolegend('topleft', title='Petal.Width', ncol=3)
 #'   # Also try simplest "autolegend()" for click-to-draw
 #'
-#' plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width,
-#'     set='PuBuGn', alpha = 0.8, bias = 1.5, legend_len = 12), cex = 3, pch = 16 )
-#'   autolegend('topleft', title = 'Petal.Width', ncol = 3)
+#' # Try scales which include NA in both colour and alpha channel
+#' # Note, a crude fix to reverse the palette order, and changing the autolegend labels
+#' with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha=Ozone,
+#'     na_colour='black'), pch=16, cex=sqrt(Wind) ))
+#'   .autocol_legend[[1]] = -.autocol_legend[[1]]
+#'   autolegend('bottom', inset=1, bty='n', horiz=TRUE)
+#'   # Note inset=1 draws on opposite side ie above not below plot area
+#'
 #'
 #' # Here we want a summary plot ordered by level, so need to create a colour vector to match
 #' # 'Alphabet' is a built-in colour set, see "palette.pals()"
 #' mixedbag = as.factor(sample(letters,1000,replace=TRUE))
-#'   plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag), set='Alphabet'))
-#'   autolegend('bottom', ncol = 9, cex = 0.7)
+#'   plot(x=mixedbag, y=rnorm(1000), col=autocol(levels(mixedbag), set='Alphabet'))
+#'   autolegend('bottom', ncol=9, cex=0.7)
 #'
 #' # Maintain the order of strings
 #' barplot(1:8, col=autocol(LETTERS[8:1]))
 #'   autolegend('topleft')
 #'
-#' # All colour scales must be string / number, so will require 'unclassing'
+#' # Any unusual formats are coerced to numeric and the legend converted back
 #' mydates = as.Date('2000-01-01')+0:100
-#'   plot(mydates, pch=16, col=autocol(as.numeric(mydates)) )
-#'   attr(.autocol_legend[[1]], 'class') <- class(mydates)
-#'   autolegend(x = 0, y = mydates[100], title = 'My Dates')
+#'   plot(mydates, pch=16, col=autocol(mydates, set=rainbow(10), bias=2) )
+#'   autolegend(x=0, y=mydates[100], title='My Dates')
+#'
+#' # Timeseries objects plot as a line, but can overlay with points()
+#' plot(airmiles)
+#'   points(airmiles, pch=15, col=autocol(airmiles, set='Reds'))
 #'
 #' # Use the limits to clip or augment the colour-scale
 #' layout(matrix(1:2))
 #'   plot(runif(10), col=autocol(1:10, limits=c(0,20)), pch=16,
 #'     main='Data split over two plots with same scale')
 #'   plot(runif(10), col=autocol(c(100,20:12), limits=c(0,20)), pch=16)
-#'   text(1, 0.5, pos=4, xpd = NA,
+#'   text(1, 0.5, pos=4, xpd=NA,
 #' 'This point has a
 #' value of 100 but
 #' clipped to max
 #' colour == 20')
-#'   autolegend('bottom', inset = 1, horiz = TRUE) # Draws above!
+#'   autolegend('bottom', inset=1, horiz=TRUE) # Draws above!
 #'   layout(1)
 #'
 #' @param x Vector to be mapped to colours
@@ -111,14 +115,21 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
   # TODO
 
   # Choose whether continuous or categorical datatype based on class(x)
-  pal_type = switch (class(x),
+  pal_type = switch (class(x)[1],
     'factor' = 'categorical',
     'character' = 'categorical',
     'logical' = 'categorical',
     'integer' = 'continuous',
     'numeric' = 'continuous',
-    stop('Must be one of: factor, character, logical, integer, numeric')
+    'trynumeric'
   )
+
+  if(pal_type=='trynumeric'){
+    original_class = class(x) # Will use later to convert legend back to input class
+    x = as.numeric(x)
+    if(!length(x) > 1) stop('Could not convert as.numeric(x)')
+  }
+
   # Get ready to replace these again at the end
   x_na = is.na(x)
 
@@ -139,13 +150,14 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
     .autocol_legend <<- list(legend_labels,legend_fill)
   }
 
-  if(pal_type=='continuous'){
+  if(pal_type=='continuous' | pal_type=='trynumeric'){
     chosen_colour_ramp = colorRamp(get_set(set, default = 'viridis'), space = 'Lab', bias = bias)
     # Correct limits
     if(is.na(limits[1]))
       limits = range(x, na.rm = TRUE)
 
-    create_autolegend_data(limits = limits, chosen_colour_ramp = chosen_colour_ramp, legend_len = legend_len)
+    create_autolegend_data(limits = limits, chosen_colour_ramp = chosen_colour_ramp, legend_len = legend_len,
+                           override_class = if(pal_type=='trynumeric') original_class else NA )
 
     x_scaled = (x - limits[1]) / (limits[2] - limits[1])
     x_scaled = pmin(1,pmax(0, x_scaled))
@@ -185,7 +197,7 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
 #'
 #' @examples
 #' # Simplest version: click-to-draw with locator()
-#' plot(1:10, pch=16, col=autocol(1:10, 'Blues', legend_len = 5))
+#' plot(1:10, pch=16, col=autocol(1:10, 'Blues', legend_len=5))
 #' # autolegend() # Try me!
 #'
 #' # Other neat versions -- note ?legend
@@ -224,13 +236,13 @@ autolegend = function(...){
 #' See ?autocol for list of all available colour sets.
 #'
 #' @examples
-#' image(volcano, col = autopal('RdYlGn', n=100, limits=c(50,200), bias = 1.5),
+#' image(volcano, col=autopal('RdYlGn', n=100, limits=c(50,200), bias=1.5),
 #'     breaks=seq(50,200,length.out=101) )
-#'   autolegend('bottom', inset = 1, ncol = 5)
+#'   autolegend('bottom', inset=1, ncol=5)
 #'
 #' # Or using the slightly smarter filled.contour
-#' filled.contour(volcano, col = autopal('RdYlGn', n=20, limits=c(100,150)),
-#'   levels = seq(50,200,length.out=21) )
+#' filled.contour(volcano, col=autopal('RdYlGn', n=20, limits=c(100,150)),
+#'   levels=seq(50,200,length.out=21) )
 #'
 #' @param set Colour set to use -- see ?autocol for full list. A default `sasha` or `viridis` is chosen if empty.
 #' @param n Length of colour vector to return, must be at least 2
@@ -241,17 +253,25 @@ autolegend = function(...){
 #' @import graphics
 #' @import grDevices
 #' @export
-autopal = function(set, n = 30, limits = NA, bias = 1, legend_len = 6){
+autopal = function(set = '', n = 30, limits = NA, bias = 1, legend_len = 6){
   chosen_colour_ramp = colorRamp(get_set(set), space = 'Lab', bias = bias)
-  if(!is.na(limits[1]))
-    create_autolegend_data(limits = limits, chosen_colour_ramp = chosen_colour_ramp, legend_len = legend_len)
+  if(!is.na(limits[1])){
+    original_class = NA
+
+    if(!class(limits) %in% c('numeric','integer')){
+      original_class = class(limits)
+      limits = as.numeric(limits)}
+
+    create_autolegend_data(limits = limits, chosen_colour_ramp = chosen_colour_ramp, legend_len = legend_len,
+                           override_class = original_class)
+  }
   palcols = rgb(chosen_colour_ramp(c(0,seq(0,1,length.out=n-2),1)), maxColorValue = 255)
   return(palcols)
 }
 
 #' @import graphics
 #' @import grDevices
-create_autolegend_data = function(limits, chosen_colour_ramp, legend_len = 6){
+create_autolegend_data = function(limits, chosen_colour_ramp, legend_len = 6, override_class = NA){
   # Make legend data -- get pretty intervals and then cap ends to suitable decimal places
   legend_labels = pretty(limits, n = legend_len)
   longest_label = max(nchar(as.character(legend_labels)))
@@ -259,6 +279,9 @@ create_autolegend_data = function(limits, chosen_colour_ramp, legend_len = 6){
   legend_labels[length(legend_labels)] = signif(limits[2], digits = longest_label)
   legend_scaled = (legend_labels-min(legend_labels))/diff(range(legend_labels))
   legend_fill = rgb(chosen_colour_ramp(legend_scaled), maxColorValue = 255)
+
+  if(!is.na(override_class[1]))
+    attr(legend_labels, 'class') = override_class
 
   # Push legend levels into the global environment for plotting later
   # This is a hidden variable

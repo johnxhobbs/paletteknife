@@ -26,10 +26,10 @@ get_set = function(set = '', default = 'turbo' ){
 #' Plot a list of palettes for comparison
 #'
 #' @examples
-#' pals_display(c(list(rainbow = rainbow(10), default = palette()),
+#' pals_display(c(list(rainbow=rainbow(10), default=palette()),
 #'                pals.misc, pals.rcolorbrewer[c('Paired','Set1','Set2')] ))
 #'
-#' pals_display(list(rainbow = rainbow(45)[30:1], turbo = pals.viridis$turbo ))
+#' pals_display(list(rainbow=rainbow(45)[30:1], turbo=pals.viridis$turbo ))
 #'
 #' pals_display(lapply(setNames(palette.pals(),palette.pals()), palette.colors, n=NULL))
 #'

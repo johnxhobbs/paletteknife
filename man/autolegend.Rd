@@ -25,7 +25,7 @@ See examples in ?autocol for plot + legend.
 }
 \examples{
 # Simplest version: click-to-draw with locator()
-plot(1:10, pch=16, col=autocol(1:10, 'Blues', legend_len = 5))
+plot(1:10, pch=16, col=autocol(1:10, 'Blues', legend_len=5))
 # autolegend() # Try me!
 
 # Other neat versions -- note ?legend

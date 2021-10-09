@@ -102,46 +102,50 @@ has an exponential distribution, a bias value > 1 will bring out contrast at
 the low end.
 }
 \examples{
-# Try scales which include NA in both colour and alpha channel
-# Note, a crude fix to reverse the palette order, and changing the autolegend labels
-with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha = Ozone,
-    na_colour = 'black'), pch=16, cex = sqrt(Wind) ))
-  .autocol_legend[[1]] = -.autocol_legend[[1]]
-  autolegend('bottom', inset = 1, bty = 'n', horiz = TRUE)
-  # Note inset=1 draws on opposite side ie above not below plot area
+plot(iris$Sepal.Length, iris$Petal.Length, cex=3, pch=16,
+    col=autocol(iris$Petal.Width, set='PuBuGn', alpha=0.8, legend_len=12) )
+  autolegend('topleft', title='Petal.Width', ncol=3)
   # Also try simplest "autolegend()" for click-to-draw
 
-plot(iris$Sepal.Length, iris$Petal.Length, col = autocol(iris$Petal.Width,
-    set='PuBuGn', alpha = 0.8, bias = 1.5, legend_len = 12), cex = 3, pch = 16 )
-  autolegend('topleft', title = 'Petal.Width', ncol = 3)
+# Try scales which include NA in both colour and alpha channel
+# Note, a crude fix to reverse the palette order, and changing the autolegend labels
+with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha=Ozone,
+    na_colour='black'), pch=16, cex=sqrt(Wind) ))
+  .autocol_legend[[1]] = -.autocol_legend[[1]]
+  autolegend('bottom', inset=1, bty='n', horiz=TRUE)
+  # Note inset=1 draws on opposite side ie above not below plot area
+
 
 # Here we want a summary plot ordered by level, so need to create a colour vector to match
 # 'Alphabet' is a built-in colour set, see "palette.pals()"
 mixedbag = as.factor(sample(letters,1000,replace=TRUE))
-  plot(x = mixedbag, y = rnorm(1000), col = autocol(levels(mixedbag), set='Alphabet'))
-  autolegend('bottom', ncol = 9, cex = 0.7)
+  plot(x=mixedbag, y=rnorm(1000), col=autocol(levels(mixedbag), set='Alphabet'))
+  autolegend('bottom', ncol=9, cex=0.7)
 
 # Maintain the order of strings
 barplot(1:8, col=autocol(LETTERS[8:1]))
   autolegend('topleft')
 
-# All colour scales must be string / number, so will require 'unclassing'
+# Any unusual formats are coerced to numeric and the legend converted back
 mydates = as.Date('2000-01-01')+0:100
-  plot(mydates, pch=16, col=autocol(as.numeric(mydates)) )
-  attr(.autocol_legend[[1]], 'class') <- class(mydates)
-  autolegend(x = 0, y = mydates[100], title = 'My Dates')
+  plot(mydates, pch=16, col=autocol(mydates, set=rainbow(10), bias=2) )
+  autolegend(x=0, y=mydates[100], title='My Dates')
+
+# Timeseries objects plot as a line, but can overlay with points()
+plot(airmiles)
+  points(airmiles, pch=15, col=autocol(airmiles, set='Reds'))
 
 # Use the limits to clip or augment the colour-scale
 layout(matrix(1:2))
   plot(runif(10), col=autocol(1:10, limits=c(0,20)), pch=16,
     main='Data split over two plots with same scale')
   plot(runif(10), col=autocol(c(100,20:12), limits=c(0,20)), pch=16)
-  text(1, 0.5, pos=4, xpd = NA,
+  text(1, 0.5, pos=4, xpd=NA,
 'This point has a
 value of 100 but
 clipped to max
 colour == 20')
-  autolegend('bottom', inset = 1, horiz = TRUE) # Draws above!
+  autolegend('bottom', inset=1, horiz=TRUE) # Draws above!
   layout(1)
 
 }

@@ -4,7 +4,7 @@
 \alias{autopal}
 \title{Auto-Palette}
 \usage{
-autopal(set, n = 30, limits = NA, bias = 1, legend_len = 6)
+autopal(set = "", n = 30, limits = NA, bias = 1, legend_len = 6)
 }
 \arguments{
 \item{set}{Colour set to use -- see ?autocol for full list. A default \code{sasha} or \code{viridis} is chosen if empty.}
@@ -29,12 +29,12 @@ the same colour range is needed across several plots.
 See ?autocol for list of all available colour sets.
 }
 \examples{
-image(volcano, col = autopal('RdYlGn', n=100, limits=c(50,200), bias = 1.5),
+image(volcano, col=autopal('RdYlGn', n=100, limits=c(50,200), bias=1.5),
     breaks=seq(50,200,length.out=101) )
-  autolegend('bottom', inset = 1, ncol = 5)
+  autolegend('bottom', inset=1, ncol=5)
 
 # Or using the slightly smarter filled.contour
-filled.contour(volcano, col = autopal('RdYlGn', n=20, limits=c(100,150)),
-  levels = seq(50,200,length.out=21) )
+filled.contour(volcano, col=autopal('RdYlGn', n=20, limits=c(100,150)),
+  levels=seq(50,200,length.out=21) )
 
 }
