@@ -35,7 +35,7 @@
 #' or a colour. If `TRUE`, a transparent black is used by default.
 #'
 #' Any other options can be passed through to axis() directly (see ?axis), most
-#' notably `las = 2` to rotate the labels.
+#' notably `las = 2` to rotate the labels, and `cex.axis` for label size.
 #'
 #' This does NOT work well for barplot() categorical axis, for this continue to use
 #' the basic axis() function with custom labels, see examples.
