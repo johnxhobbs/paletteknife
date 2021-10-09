@@ -9,11 +9,12 @@ get_set = function(set = '', default = 'turbo' ){
   if(set[1]=='')
     set = default
 
-  if(length(set)==1) # assume you've given a name of a set
+  if(length(set)==1){ # assume you've given a name of a set
     set_palette = c(pals.misc, pals.rcolorbrewer, pals.viridis)[[set]]
 
-  if(length(set)==1 & is.null(set_palette))  # try the built-in palette names
-    set_palette = palette.colors(palette = set)
+    if(is.null(set_palette))  # try the built-in palette names
+      set_palette = palette.colors(palette = set)
+  }
 
   if(length(set) > 1) # you've given your own palette vector
     set_palette = set

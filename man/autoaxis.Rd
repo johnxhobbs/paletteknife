@@ -67,7 +67,7 @@ A grid can be added at the same time by setting major_grid or minor_grid to \cod
 or a colour. If \code{TRUE}, a transparent black is used by default.
 
 Any other options can be passed through to axis() directly (see ?axis), most
-notably \code{las = 2} to rotate the labels.
+notably \code{las = 2} to rotate the labels, and \code{cex.axis} for label size.
 
 This does NOT work well for barplot() categorical axis, for this continue to use
 the basic axis() function with custom labels, see examples.
