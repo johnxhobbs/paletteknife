@@ -10,6 +10,11 @@ The principal functions included are:
  - `autolegend()` - draws a legend with the last `autocol()` scales
  - `autoaxis()` - adds more axes labels and gridlines
  - `autopal()` - creates a colour palette between limits
+ 
+Extensive examples have been included, see `?autocol` and `?autolegend` for starters.
+Functions themselves are relatively simple but serve as shortcuts for making better
+plots. Suggestions and contributions are very welcome for other base graphics tasks
+which can be helpfully decorated, see maintainer contact details.
 
 ## Installation
 
