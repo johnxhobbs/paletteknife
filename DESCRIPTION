@@ -6,8 +6,8 @@ Authors@R:
          family = "Hobbs",
          role = c("aut", "cre"),
          email = "johnxhobbs@gmail.com")
-Description: This package streamlines the steps for adding colour scales and associated
-         legends when working with base R graphics, especially with interactive use.
+Description: Streamlines the steps for adding colour scales and associated legends 
+         when working with base R graphics, especially with interactive use.
 License: MIT + file LICENSE
 URL: https://github.com/johnxhobbs/paletteknife
 BugReports: https://github.com/johnxhobbs/paletteknife/issues
