@@ -7,7 +7,10 @@ Authors@R:
          role = c("aut", "cre"),
          email = "johnxhobbs@gmail.com")
 Description: Streamlines the steps for adding colour scales and associated legends 
-         when working with base R graphics, especially with interactive use.
+         when working with base R graphics, especially for interactive use. Popular
+         palettes are included and pretty legends produced when mapping a large 
+         variety of vector classes to a colour scale. An additional helper for 
+         adding axes and gridlines complements the base::plot workflow.
 License: MIT + file LICENSE
 URL: https://github.com/johnxhobbs/paletteknife
 BugReports: https://github.com/johnxhobbs/paletteknife/issues
