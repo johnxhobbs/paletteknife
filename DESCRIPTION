@@ -6,11 +6,11 @@ Authors@R:
          family = "Hobbs",
          role = c("aut", "cre"),
          email = "johnxhobbs@gmail.com")
-Description: This function embeds a few of the most popular colour palettes (ColorBrewer, Viridis, Turbo, and others) 
-             and wraps them in a simple colorRamp helper function to facilitate fast mapping of a variable to colour.
-             The output can be used with the default plot() functions in-line, or as a static palette for image().
-             Creating a palette creates a hidden legend object which can be plotted interactively with no further faff.
+Description: This package streamlines the steps for adding colour scales and associated
+         legends when working with base R graphics, especially with interactive use.
 License: MIT + file LICENSE
+URL: https://github.com/johnxhobbs/paletteknife
+BugReports: https://github.com/johnxhobbs/paletteknife/issues
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.1.1
