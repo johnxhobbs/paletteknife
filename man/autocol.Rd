@@ -54,7 +54,7 @@ Create a vector of colours and associated legend for easier base plots
 \details{
 Helper function for using colours in R's default \code{plot} and \code{legend}. Colours
 from built-in palettes are automatically scaled to return a vector of colours
-and a hidden \code{.autolegend_persistent} which contains the correct legend mapping for
+and create \code{options('autolegend')} which contains the correct legend mapping for
 \code{autolegend()}.
 
 A discrete palette is used for factor and character inputs whilst a
@@ -108,12 +108,10 @@ plot(iris$Sepal.Length, iris$Petal.Length, cex=3, pch=16,
   # Also try simplest "autolegend()" for click-to-draw
 
 # Try scales which include NA in both colour and alpha channel
-# Note, a crude fix to reverse the palette order, and changing the autolegend labels
-with(airquality, plot(Temp, col=autocol(x=-Solar.R, set='Spectral', alpha=Ozone,
-    na_colour='black'), pch=16, cex=sqrt(Wind) ))
-  .autolegend_persistent[[1]] = -.autolegend_persistent[[1]]
-  autolegend('bottom', inset=1, bty='n', horiz=TRUE)
+with(airquality, plot(Temp, col=autocol(x=Solar.R, set='YlOrRd', alpha=Ozone,
+    na_colour='cyan'), pch=16, cex=sqrt(Wind) ))
   # Note inset=1 draws on opposite side ie above not below plot area
+  autolegend('bottom', inset=1, bty='n', horiz=TRUE)
 
 
 # Here we want a summary plot ordered by level, so need to create a colour vector to match
