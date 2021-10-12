@@ -43,9 +43,9 @@ Overlay base plot axis with custom intervals
 Major and minor tick marks can be specified in a number of ways:
 \itemize{
 \item As a character string if the axis is datetime, such as 'year' or 'hour'
-which are passed to seq().
+which are passed to \code{seq()}
 \item As a tick interval using the default \code{spacing = TRUE}
-\item As an approximate number of tick marks to include, using pretty() to find
+\item As an approximate number of tick marks to include, using \code{pretty()} to find
 the best interval, using \code{spacing = FALSE}
 }
 
@@ -53,27 +53,27 @@ Major adds labels and ticks, minor is just half-sized ticks marks. Both
 tick sizes can be changed (or direction changed) using \code{tck}.
 
 Three different datetime axis are possible: year, day-offset, seconds-offset. Use
-\code{format} to specify how the label should appear, such as '\%b \%Y' (see ?strptime)
+\code{format} to specify how the label should appear, such as '\%b \%Y' (see \code{?strptime})
 \itemize{
-\item Year should be treated as a conventional numeric axis, use major=1/12 not major='month'.
-\item day-offset is an axis of class(x) = 'Date' and is identified if the axis range exists
-within +/-9e4, or within dates 1723 - 2216.
-\item second-offset is an axis of class(x)='POSIXct' and is identified by a range outside
-of +/-9e4. This will give very strange results if your POSIXct axis is within
-24 hours of 1970-01-01.
+\item Year should be treated as a conventional numeric axis, use \code{major=1/12} not \code{major='month'}
+\item day-offset is an axis of \code{class(x)=='Date'} and is identified if the axis range exists
+within +/-9e4, meaning within dates 1723 - 2216
+\item second-offset is an axis of \code{class(x)=='POSIXct'} and is identified by a range outside
+of +/-9e4. This will give very strange results if your entire POSIXct axis is within
+24 hours of 1970-01-01
 }
 
-A grid can be added at the same time by setting major_grid or minor_grid to \code{TRUE}
-or a colour. If \code{TRUE}, a transparent black is used by default.
+A grid can be added at the same time by setting \code{major_grid} or \code{minor_grid} to \code{TRUE}
+or a colour string. If \code{TRUE}, a transparent black is used by default.
 
-Any other options can be passed through to axis() directly (see ?axis), most
+Any other options can be passed through to \code{axis()} directly (see \code{?axis}), most
 notably \code{las = 2} to rotate the labels, and \code{cex.axis} for label size.
 
-This does NOT work well for barplot() categorical axis, for this continue to use
-the basic axis() function with custom labels, see examples.
+This does NOT work well for \code{barplot()} categorical axis, for this continue to use
+the basic \code{axis()} function with custom labels, see examples.
 }
 \examples{
-plot(sunspots) # These time series are actually given in decimal years
+plot(sunspots) # This time series is actually given in decimal years
   autoaxis(side=3, major=50, major_grid='coral', minor=10, minor_grid=TRUE, spacing=TRUE)
   autoaxis(side=4, major=11, minor=25, spacing=FALSE, las=2, cex.axis=0.5, tck=0.02)
 

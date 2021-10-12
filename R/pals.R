@@ -41,6 +41,8 @@ get_set = function(set = '', default = 'turbo' ){
 #'
 #' @param pals Named list of palettes (colour vectors)
 #'
+#' @return NULL
+#'
 #' @import graphics
 #' @import grDevices
 #' @export
@@ -58,6 +60,8 @@ pals_display = function(pals = c(pals.misc,pals.rcolorbrewer,pals.viridis)){
   axis(side = 1, at = +0.5 + 1:length(pal_names), labels = pal_names, las = 2, cex.axis = 0.8 )
   axis(side = 3, at = +0.5 + 1:length(pal_names), labels = pal_lengths, cex.axis = 0.8 )
   rect(xleft = x_coords, xright = x_coords+1, ybottom = y_coords, ytop = y_coords+1, col = colours, border = NA)
+
+  return(NULL)
 }
 
 

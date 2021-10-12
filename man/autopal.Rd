@@ -17,15 +17,21 @@ autopal(set = "", n = 30, limits = NA, bias = 1, legend_len = 6)
 
 \item{legend_len}{Continuous legend target size}
 }
+\value{
+A character vector of colours of length \code{n} giving a continuous colour palette sampled from \code{set}.
+If \code{limits} are specified, information for a colour legend is produced of approximate length
+\code{legend_len}. This is stored in \code{options('autolegend')} and not returned explicitly.
+}
 \description{
 Return a palette vector from one of the built-in sets
 }
 \details{
 This can be used where a palette is provided rather than a mapped colour
-vector, for example image(). The limits must be specified for the \code{autolegend}
-to be generated for the new palette.
+vector, for example \code{image()}. The limits must be specified for \code{autolegend()}
+information to be updated.
 Custom colour limits can be set using \code{breaks} or \code{levels} (see examples) if
 the same colour range is needed across several plots.
+
 See ?autocol for list of all available colour sets.
 }
 \examples{

@@ -48,11 +48,17 @@ Single values must be in range 0-1. If \code{NA} no alpha channel is added.}
 
 \item{legend_len}{Continuous legend target size}
 }
+\value{
+A character vector of colours of equal length to input \code{x}, sampled from the chosen \code{set}.
+This allows it to be used for plotting directly. Information for a legend (containing every
+level for categorical data, or approximately length \code{legend_len} for continuous) is stored in
+\code{options('autolegend')} and not returned explicitly.
+}
 \description{
 Create a vector of colours and associated legend for easier base plots
 }
 \details{
-Helper function for using colours in R's default \code{plot} and \code{legend}. Colours
+Helper function for using colours in R's default \code{plot()} and \code{legend()}. Colours
 from built-in palettes are automatically scaled to return a vector of colours
 and create \code{options('autolegend')} which contains the correct legend mapping for
 \code{autolegend()}.

@@ -9,3 +9,9 @@ There was 1 NOTE:
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package
+
+
+## CRAN maintainer feedback
+
+* Added \value tags to all exported functions
+* Added () after function names

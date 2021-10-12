@@ -33,7 +33,7 @@ which can be helpfully streamlined. See maintainer contact details and repositor
 You can install the released version of paletteknife from [CRAN](https://CRAN.R-project.org) with:
 
 ``` r
-install.packages("paletteknife")
+install.packages('paletteknife')
 ```
 
 ## Example
