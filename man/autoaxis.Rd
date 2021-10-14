@@ -8,10 +8,10 @@ autoaxis(
   side,
   major = NA,
   major_grid = FALSE,
-  spacing = TRUE,
   minor = NA,
   minor_grid = FALSE,
   format = "\%Y-\%m-\%d",
+  spacing = TRUE,
   tck = -0.03,
   ...
 )
@@ -19,22 +19,33 @@ autoaxis(
 \arguments{
 \item{side}{Side to add axis, 1 = bottom, 2 = left, 3 = top, 4 = right}
 
-\item{major}{Spacing of major axis ticks and labels (or approx. number of intervals if \code{spacing = FALSE}).
-If the axis is date or time, use a interval specified in ?seq.POSIXt, such as 'sec' or 'week'}
+\item{major}{Spacing of major axis ticks and labels (or approx. number of
+intervals if \code{spacing = FALSE}). If the axis is date or time,
+use a interval specified in \code{?seq.POSIXt}, such as 'sec' or
+'week'}
 
-\item{major_grid}{Add gridlines corresponding to major axis ticks, \code{TRUE} to get default translucent black, otherwise colour (name or hex)}
+\item{major_grid}{Add grid lines corresponding to major axis ticks, \code{TRUE}
+to get default translucent black, otherwise colour (name or hex)}
 
-\item{spacing}{Should \code{major} and \code{minor} be interpreted as tick spacing (default) or approx. number of ticks}
+\item{minor}{Spacing (or number) of minor ticks (note, no label for minor).
+If given as a character string, it will pass to \code{seq.POSIXt}}
 
-\item{minor}{Spacing (or number) of minor ticks (note, no label for minor). If given as a character string, it will pass to \code{seq.POSIXt}}
+\item{minor_grid}{Add gridlines for minor ticks, \code{TRUE} uses transparent
+black, otherwise colour string}
 
-\item{minor_grid}{Add gridlines for minor ticks, \code{TRUE} uses transparent black, otherwise colour string}
+\item{format}{Date or time format for major axis -- \code{major} must be a
+character string in this case}
 
-\item{format}{Date or time format for major axis -- \code{major} must be a character string in this case}
+\item{spacing}{Should \code{major} and \code{minor} be interpreted as tick spacing
+(default) or approximate number of ticks}
 
-\item{tck}{Size of axis tick: minor axis will always take half the tick size}
+\item{tck}{Size of axis tick: minor axis will always take half this value}
 
-\item{...}{Additional arguemnts passed to \code{axis()}, for example \code{las=2} for perpendicular labels}
+\item{...}{Additional arguemnts passed to \code{axis()}, for example \code{las=2}
+for perpendicular labels}
+}
+\value{
+No return value (\code{NULL})
 }
 \description{
 Overlay base plot axis with custom intervals
@@ -43,7 +54,9 @@ Overlay base plot axis with custom intervals
 Major and minor tick marks can be specified in a number of ways:
 \itemize{
 \item As a character string if the axis is datetime, such as 'year' or 'hour'
-which are passed to \code{seq()}
+which are passed to \code{seq()}. These can be prefixed with an integer multiplier,
+for example '6 hour', '30-sec',  or '10year'. Any non-alphanumeric separator
+can be used, or none.
 \item As a tick interval using the default \code{spacing = TRUE}
 \item As an approximate number of tick marks to include, using \code{pretty()} to find
 the best interval, using \code{spacing = FALSE}
@@ -80,10 +93,12 @@ plot(sunspots) # This time series is actually given in decimal years
 plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3),
     rnorm(1e3), xlab='POSIXct', xaxt='n')
   autoaxis(side=1, major='day', minor='hour', format='\%A')
+  autoaxis(side=3, major='6 hour', format='\%H:\%M')
 
 plot(seq(as.Date('2013-02-01'),as.Date('2020-01-03'),length.out=1e3),
     rnorm(1e3), xlab='Date', xaxt='n')
   autoaxis(side=1, major='year', minor='quarter', format='\%Y')
+  autoaxis(side=3, minor='3month', minor_grid=TRUE)
 
 # For barplot() use base functions - remember to set width=1, space=0
 # otherwise bars will not be plotted on integer x-coordinates

@@ -13,5 +13,5 @@ There are currently no downstream dependencies for this package
 
 ## CRAN maintainer feedback
 
-* Added \value tags to all exported functions
+* Added \value tags to all exported functions (for sure)
 * Added () after function names

@@ -232,7 +232,7 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
 #'            automatically from `options('autolegend')`. See examples for useful
 #'            parameters, including `pch` and `pt.cex`
 #'
-#' @return NULL
+#' @return No return value (`NULL`)
 #'
 #' @import graphics
 #' @import grDevices

@@ -11,6 +11,9 @@ autolegend(...)
 automatically from \code{options('autolegend')}. See examples for useful
 parameters, including \code{pch} and \code{pt.cex}}
 }
+\value{
+No return value (\code{NULL})
+}
 \description{
 Add a legend for the last \code{autocol()} set generated
 }

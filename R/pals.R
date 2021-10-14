@@ -41,7 +41,7 @@ get_set = function(set = '', default = 'turbo' ){
 #'
 #' @param pals Named list of palettes (colour vectors)
 #'
-#' @return NULL
+#' @return No return value (`NULL`)
 #'
 #' @import graphics
 #' @import grDevices

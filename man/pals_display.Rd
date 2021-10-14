@@ -9,6 +9,9 @@ pals_display(pals = c(pals.misc, pals.rcolorbrewer, pals.viridis))
 \arguments{
 \item{pals}{Named list of palettes (colour vectors)}
 }
+\value{
+No return value (\code{NULL})
+}
 \description{
 Plot a list of palettes for comparison
 }
