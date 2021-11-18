@@ -71,7 +71,7 @@
 #' @param major Spacing of major axis ticks and labels (or approx. number of
 #'              intervals if `spacing = FALSE`). If the axis is date or time,
 #'              use a interval specified in `?seq.POSIXt`, such as 'sec' or
-#'              'week'
+#'              'week'. Must be 'day' or larger Date axis (see `?seq.Date`).
 #' @param major_grid Add grid lines corresponding to major axis ticks, `TRUE`
 #'              to get default translucent black, otherwise colour (name or hex)
 #' @param minor Spacing (or number) of minor ticks (note, no label for minor).
@@ -107,23 +107,31 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
     # Guess whether datetime is in seconds (POSIXct) or days (as.Date)
     # If plot range is 1723-2216 (Date) or within 24hr of 1970-01-01
     # ==> assume it's a date, not seconds. Pretty safe!
-    if(lims[1] > -9e4 & lims[2] < 9e4){
-      date_format = TRUE
-      lims = as.POSIXct.Date(lims, origin = '1970-01-01')}
+    # Unless you have small time, such as ITime or difftime of only a few hours
+
+    # If outside of 0 AD - 3000 AD then definitely POSIX
+    # If range is nowhere near the target one-interval, then use Date
+    # Eg range < 0.02 means 50x away from 'sec' == or 1728 ticks if as.Date
+    # range < 1728 then 50x away from 'day'
+    # If spacing not given (no unit)
+    # - only if date is within 2000-2025
+
+    smallest_interval = which(c('sec', 'min', 'hour', 'day', 'week', 'month', 'quarter', 'year') %in% gsub('[^a-z]','',c(major,minor)))
+    if(length(smallest_interval)==0) stop('No valid interval found (like "2 week") - perhaps you want spacing=FALSE')
+    smallest_interval = min(smallest_interval)
+
+    # Cannot ask for less than 'day' for a Date axis
+    if(smallest_interval>=4){
+      # If this were POSIX we would be talking about +/-1 day
+      if(lims[1] > -9e4 & lims[2] < 9e4){
+        date_format = TRUE
+      }
+    }
+
+    if(date_format)
+      lims = as.POSIXct.Date(lims, origin = '1970-01-01')
     else
       lims = as.POSIXct.numeric(lims, origin = '1970-01-01')
-
-    # Now also check for multiple-of-division for example '6 hour'
-    major_multiple = 1
-    minor_multiple = 1
-
-    if(substr(major,1,1) %in% 1:9){
-      major_multiple = as.integer(sub('[^1-9].*$','',major))
-      major = sub('.*[^a-z]','',major)}
-
-    if(substr(minor,1,1) %in% 1:9){
-      minor_multiple = as.integer(sub('[^1-9].*$','',minor))
-      minor = sub('.*[^a-z]','',minor)}
   }
 
   # Start off by getting pretty start / finish -- used for spacing = T or F
@@ -132,19 +140,26 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
 
   # Create the tick 'at'
   # If you want to get this SPACING rather than number-of-ticks, seq()
-  if(spacing==TRUE){
+  # If something like '6 hour' this is automatically used by seq.POSIXt
+  if(spacing){
     if(!is.na(major)) major_at = seq(major_at[1], major_at[length(major_at)], by=major)
     if(!is.na(minor)) minor_at = seq(minor_at[1], minor_at[length(minor_at)], by=minor)
   }
-  # Apply the skip-a-few if something like '6 hour' has been given
-  if(date_axis==TRUE){
-    if(!is.na(major)) major_at = major_at[seq(1, length(major_at), by=major_multiple)]
-    if(!is.na(minor)) minor_at = minor_at[seq(1, length(minor_at), by=minor_multiple)]
-  }
   # Other option is to give major as an approx number of ticks
-  if(spacing==FALSE){
+  if(!spacing & !date_axis){
     if(!is.na(major)) major_at = pretty(lims, major)
     if(!is.na(minor)) minor_at = pretty(lims, minor)
+  }
+  if(!spacing & date_axis){
+    pretty_time = function(x, n){
+      for(interval in c('year','quarter','month','week','day','12 hour','6 hour','3 hour','hour','30 min','15 min','5 min','min','30 sec','15 sec','5 sec','sec')){
+        # Do not allow a Date sequence to be sampled at less than day
+        if(inherits(x,'Date') & interval=='12 hour') return(at)
+        at = seq(lims[1], lims[2], by=interval)
+        if(length(at)>=(n*0.7)) return(at)}
+    }
+    if(!is.na(major)) major_at = pretty_time(lims, major)
+    if(!is.na(minor)) minor_at = pretty_time(lims, minor)
   }
 
   if(!is.na(major)){
