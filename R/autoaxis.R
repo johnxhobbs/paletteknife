@@ -8,14 +8,15 @@
 #' Major and minor tick marks can be specified in a number of ways:
 #'
 #'  - As a character string if the axis is datetime, such as 'year' or 'hour'
-#'    which are passed to `seq()`. These can be prefixed with an integer multiplier,
-#'    for example '6 hour', '30-sec',  or '10year'. Any non-alphanumeric separator
-#'    can be used, or none.
+#'    which are passed as `by` to `seq()`. These can be prefixed with an integer multiplier,
+#'    for example '6 hour' or '10 year', as per `seq.POSIXt` and `seq.Date`.
 #'
 #'  - As a tick interval using the default `spacing = TRUE`
 #'
 #'  - As an approximate number of tick marks to include, using `pretty()` to find
-#'    the best interval, using `spacing = FALSE`
+#'    the best interval, using `spacing = FALSE`. Use a character number if this
+#'    is a Date or Time axis, such as `major = '100'` and `spacing` will be set
+#'    FALSE automatically.
 #'
 #' Major adds labels and ticks, minor is just half-sized ticks marks. Both
 #' tick sizes can be changed (or direction changed) using `tck`.
@@ -26,7 +27,7 @@
 #'  - Year should be treated as a conventional numeric axis, use `major=1/12` not `major='month'`
 #'
 #'  - day-offset is an axis of `class(x)=='Date'` and is identified if the axis range exists
-#'    within +/-9e4, meaning within dates 1723 - 2216
+#'    within +/-9e4, meaning within dates 1723 - 2216, and minimum interval is 'day'
 #'
 #'  - second-offset is an axis of `class(x)=='POSIXct'` and is identified by a range outside
 #'    of +/-9e4. This will give very strange results if your entire POSIXct axis is within
@@ -53,8 +54,8 @@
 #'
 #' plot(seq(as.Date('2013-02-01'),as.Date('2020-01-03'),length.out=1e3),
 #'     rnorm(1e3), xlab='Date', xaxt='n')
-#'   autoaxis(side=1, major='year', minor='quarter', format='%Y')
-#'   autoaxis(side=3, minor='3month', minor_grid=TRUE)
+#'   autoaxis(side=1, major='10', minor='50', format='%Y')
+#'   autoaxis(side=3, minor='3 month', minor_grid=TRUE)
 #'
 #' # For barplot() use base functions - remember to set width=1, space=0
 #' # otherwise bars will not be plotted on integer x-coordinates
@@ -99,8 +100,7 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
     lims = par('usr')[3:4] # Drawing y-axis
 
   date_axis = class(major)=='character' | class(minor)=='character'
-  if(date_axis==TRUE & spacing==FALSE) stop('spacing must be TRUE for time-interval axes')
-  date_format = FALSE
+  #if(date_axis==TRUE & spacing==FALSE) stop('spacing must be TRUE for time-interval axes')
 
   # Is a date axis wanted here?
   if(date_axis){
@@ -108,25 +108,18 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
     # If plot range is 1723-2216 (Date) or within 24hr of 1970-01-01
     # ==> assume it's a date, not seconds. Pretty safe!
     # Unless you have small time, such as ITime or difftime of only a few hours
+    # and have EXPLICITLY asked for a small unit eg 'min'
 
-    # If outside of 0 AD - 3000 AD then definitely POSIX
-    # If range is nowhere near the target one-interval, then use Date
-    # Eg range < 0.02 means 50x away from 'sec' == or 1728 ticks if as.Date
-    # range < 1728 then 50x away from 'day'
-    # If spacing not given (no unit)
-    # - only if date is within 2000-2025
-
-    smallest_interval = which(c('sec', 'min', 'hour', 'day', 'week', 'month', 'quarter', 'year') %in% gsub('[^a-z]','',c(major,minor)))
-    if(length(smallest_interval)==0) stop('No valid interval found (like "2 week") - perhaps you want spacing=FALSE')
-    smallest_interval = min(smallest_interval)
+    smallest_interval = which(c('year', 'quarter', 'month', 'week', 'day', 'hour', 'min', 'sec') %in% gsub('[^a-z]','',c(major,minor)))
+    if(length(smallest_interval)==0){
+      spacing = FALSE # only way this is going to work
+      smallest_interval = 0
+    }
+    smallest_interval = max(smallest_interval)
 
     # Cannot ask for less than 'day' for a Date axis
-    if(smallest_interval>=4){
-      # If this were POSIX we would be talking about +/-1 day
-      if(lims[1] > -9e4 & lims[2] < 9e4){
-        date_format = TRUE
-      }
-    }
+    # If this were POSIX we would be talking about +/-1 day
+    date_format = lims[1] > -9e4 & lims[2] < 9e4 & smallest_interval<=5
 
     if(date_format)
       lims = as.POSIXct.Date(lims, origin = '1970-01-01')
@@ -151,15 +144,8 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
     if(!is.na(minor)) minor_at = pretty(lims, minor)
   }
   if(!spacing & date_axis){
-    pretty_time = function(x, n){
-      for(interval in c('year','quarter','month','week','day','12 hour','6 hour','3 hour','hour','30 min','15 min','5 min','min','30 sec','15 sec','5 sec','sec')){
-        # Do not allow a Date sequence to be sampled at less than day
-        if(inherits(x,'Date') & interval=='12 hour') return(at)
-        at = seq(lims[1], lims[2], by=interval)
-        if(length(at)>=(n*0.7)) return(at)}
-    }
-    if(!is.na(major)) major_at = pretty_time(lims, major)
-    if(!is.na(minor)) minor_at = pretty_time(lims, minor)
+    if(!is.na(major)) major_at = pretty(lims, as.integer(major))
+    if(!is.na(minor)) minor_at = pretty(lims, as.integer(minor))
   }
 
   if(!is.na(major)){
@@ -173,6 +159,12 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
     major_at = as.numeric(major_at) / 86400 # Do not use as.Date - gets rid of decimal hour
   if(!is.na(minor) & date_axis & date_format)
     minor_at = as.numeric(minor_at) / 86400
+
+  # Check length - otherwise can accidentally crash
+  if(!is.na(major)) if(length(major_at)>1e3) stop('Major axis has more than 1000 ticks')
+  if(!is.na(minor)) if(length(minor_at)>1e3) stop('Minor axis has more than 1000 ticks')
+  if(!is.na(major)) if(length(major_at)<2) stop('Major axis has one or fewer ticks - check interval', if(date_axis) ' - do not use anything less than "day" if as.Date axis' )
+  if(!is.na(minor)) if(length(minor_at)<2) stop('Minor axis has one or fewer ticks - check interval', if(date_axis) ' - do not use anything less than "day" if as.Date axis' )
 
   # Add the axis
   if(!is.na(major)) axis(side=side, at=major_at, labels=major_labs, tck=tck, ...)
