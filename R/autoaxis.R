@@ -9,7 +9,7 @@
 #'
 #'  - As a character string if the axis is datetime, such as 'year' or 'hour'
 #'    which are passed as `by` to `seq()`. These can be prefixed with an integer multiplier,
-#'    for example '6 hour' or '10 year', as per `seq.POSIXt` and `seq.Date`.
+#'    for example '6 hour' or '10 year', as per `seq.POSIXt`
 #'
 #'  - As a tick interval using the default `spacing = TRUE`
 #'
@@ -57,6 +57,12 @@
 #'   autoaxis(side=1, major='10', minor='50', format='%Y')
 #'   autoaxis(side=3, minor='3 month', minor_grid=TRUE)
 #'
+#' # Guessing is ambiguous with small values, depends on smallest interval
+#' plot(1:500,runif(500), type='l', xaxt='n', xlab='Time or Date?', main=
+#'   'For small values (<1e5), use interval to guess format\n')
+#' autoaxis(1, major='min', minor='10 sec', format='%M:%S')
+#' autoaxis(3, major='quarter', minor='month', format='%b %Y')
+#'
 #' # For barplot() use base functions - remember to set width=1, space=0
 #' # otherwise bars will not be plotted on integer x-coordinates
 #' barplot(mtcars$mpg, width=1, space=0, ylab='mpg')
@@ -72,7 +78,7 @@
 #' @param major Spacing of major axis ticks and labels (or approx. number of
 #'              intervals if `spacing = FALSE`). If the axis is date or time,
 #'              use a interval specified in `?seq.POSIXt`, such as 'sec' or
-#'              'week'. Must be 'day' or larger Date axis (see `?seq.Date`).
+#'              'week', or character value for spacing such as `='20'`
 #' @param major_grid Add grid lines corresponding to major axis ticks, `TRUE`
 #'              to get default translucent black, otherwise colour (name or hex)
 #' @param minor Spacing (or number) of minor ticks (note, no label for minor).
@@ -100,6 +106,7 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
     lims = par('usr')[3:4] # Drawing y-axis
 
   date_axis = class(major)=='character' | class(minor)=='character'
+  date_format = FALSE
   #if(date_axis==TRUE & spacing==FALSE) stop('spacing must be TRUE for time-interval axes')
 
   # Is a date axis wanted here?
@@ -117,10 +124,16 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
     }
     smallest_interval = max(smallest_interval)
 
-    # Cannot ask for less than 'day' for a Date axis
     # If this were POSIX we would be talking about +/-1 day
-    date_format = lims[1] > -9e4 & lims[2] < 9e4 & smallest_interval<=5
+    # If asking for at least a day, then assume it must be date
+    # Possible to ask for 'hour' if date range one week
+    if(lims[1] > -9e4 & lims[2] < 9e4){
+      if(smallest_interval<=5) date_format = TRUE
+      if(smallest_interval==6 & diff(lims)<=7) date_format = TRUE
+    }
 
+    # For manipulation, we will convert EVERYTHING into seconds
+    # This will make pretty() and seq() behave themselves and give sub-day intervals
     if(date_format)
       lims = as.POSIXct.Date(lims, origin = '1970-01-01')
     else
@@ -163,8 +176,8 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
   # Check length - otherwise can accidentally crash
   if(!is.na(major)) if(length(major_at)>1e3) stop('Major axis has more than 1000 ticks')
   if(!is.na(minor)) if(length(minor_at)>1e3) stop('Minor axis has more than 1000 ticks')
-  if(!is.na(major)) if(length(major_at)<2) stop('Major axis has one or fewer ticks - check interval', if(date_axis) ' - do not use anything less than "day" if as.Date axis' )
-  if(!is.na(minor)) if(length(minor_at)<2) stop('Minor axis has one or fewer ticks - check interval', if(date_axis) ' - do not use anything less than "day" if as.Date axis' )
+  if(!is.na(major)) if(length(major_at)<2) stop('Major axis has one or fewer ticks - check interval', if(date_axis) ' - do not use anything less than "hour" if as.Date axis' )
+  if(!is.na(minor)) if(length(minor_at)<2) stop('Minor axis has one or fewer ticks - check interval', if(date_axis) ' - do not use anything less than "hour" if as.Date axis' )
 
   # Add the axis
   if(!is.na(major)) axis(side=side, at=major_at, labels=major_labs, tck=tck, ...)
@@ -187,5 +200,5 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
     if(!is.na(minor)) abline(h = minor_at, col = minor_grid)
   }
 
-  return(NULL)
+  return(invisible(NULL))
 }

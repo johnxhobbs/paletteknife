@@ -61,7 +61,7 @@ pals_display = function(pals = c(pals.misc,pals.rcolorbrewer,pals.viridis)){
   axis(side = 3, at = +0.5 + 1:length(pal_names), labels = pal_lengths, cex.axis = 0.8 )
   rect(xleft = x_coords, xright = x_coords+1, ybottom = y_coords, ytop = y_coords+1, col = colours, border = NA)
 
-  return(NULL)
+  return(invisible(NULL))
 }
 
 

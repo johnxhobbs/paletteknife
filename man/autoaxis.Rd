@@ -22,7 +22,7 @@ autoaxis(
 \item{major}{Spacing of major axis ticks and labels (or approx. number of
 intervals if \code{spacing = FALSE}). If the axis is date or time,
 use a interval specified in \code{?seq.POSIXt}, such as 'sec' or
-'week'}
+'week', or character value for spacing such as \verb{='20'}}
 
 \item{major_grid}{Add grid lines corresponding to major axis ticks, \code{TRUE}
 to get default translucent black, otherwise colour (name or hex)}
@@ -54,12 +54,13 @@ Overlay base plot axis with custom intervals
 Major and minor tick marks can be specified in a number of ways:
 \itemize{
 \item As a character string if the axis is datetime, such as 'year' or 'hour'
-which are passed to \code{seq()}. These can be prefixed with an integer multiplier,
-for example '6 hour', '30-sec',  or '10year'. Any non-alphanumeric separator
-can be used, or none.
+which are passed as \code{by} to \code{seq()}. These can be prefixed with an integer multiplier,
+for example '6 hour' or '10 year', as per \code{seq.POSIXt}
 \item As a tick interval using the default \code{spacing = TRUE}
 \item As an approximate number of tick marks to include, using \code{pretty()} to find
-the best interval, using \code{spacing = FALSE}
+the best interval, using \code{spacing = FALSE}. Use a character number if this
+is a Date or Time axis, such as \code{major = '100'} and \code{spacing} will be set
+FALSE automatically.
 }
 
 Major adds labels and ticks, minor is just half-sized ticks marks. Both
@@ -70,7 +71,7 @@ Three different datetime axis are possible: year, day-offset, seconds-offset. Us
 \itemize{
 \item Year should be treated as a conventional numeric axis, use \code{major=1/12} not \code{major='month'}
 \item day-offset is an axis of \code{class(x)=='Date'} and is identified if the axis range exists
-within +/-9e4, meaning within dates 1723 - 2216
+within +/-9e4, meaning within dates 1723 - 2216, and minimum interval is 'day'
 \item second-offset is an axis of \code{class(x)=='POSIXct'} and is identified by a range outside
 of +/-9e4. This will give very strange results if your entire POSIXct axis is within
 24 hours of 1970-01-01
@@ -97,8 +98,14 @@ plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3),
 
 plot(seq(as.Date('2013-02-01'),as.Date('2020-01-03'),length.out=1e3),
     rnorm(1e3), xlab='Date', xaxt='n')
-  autoaxis(side=1, major='year', minor='quarter', format='\%Y')
-  autoaxis(side=3, minor='3month', minor_grid=TRUE)
+  autoaxis(side=1, major='10', minor='50', format='\%Y')
+  autoaxis(side=3, minor='3 month', minor_grid=TRUE)
+
+# Guessing is ambiguous with small values, depends on smallest interval
+plot(1:500,runif(500), type='l', xaxt='n', xlab='Time or Date?', main=
+  'For small values (<1e5), use interval to guess format\n')
+autoaxis(1, major='min', minor='10 sec', format='\%M:\%S')
+autoaxis(3, major='quarter', minor='month', format='\%b \%Y')
 
 # For barplot() use base functions - remember to set width=1, space=0
 # otherwise bars will not be plotted on integer x-coordinates

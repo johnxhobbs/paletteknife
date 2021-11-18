@@ -245,7 +245,7 @@ autolegend = function(...){
 
   else
     legend(..., locator(n=1), legend = options('autolegend')[[1]][[1]], fill = options('autolegend')[[1]][[2]], xpd = NA)
-  return(NULL)
+  return(invisible(NULL))
 }
 
 #' Auto-Palette
@@ -316,4 +316,5 @@ create_autolegend_data = function(limits, chosen_colour_ramp, legend_len = 6, ov
   # This is done to allow a colour vector to be returned, and the associated
   # legend information to be stashed for the subsequent add legend
   options(autolegend = list(legend_labels, legend_fill))
+  return(invisible(NULL))
 }
