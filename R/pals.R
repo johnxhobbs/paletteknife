@@ -1,10 +1,10 @@
 
-#' Helper to get a set by name - will search all included lists ("pals."),
-#' then built-in, or just returns itself if already a vector
-#' @param set Character string of single palette name or a vector of colours
-#' @param default What to use if an empty string is passed (the default case)
-#' @import graphics
-#' @import grDevices
+# Helper to get a set by name - will search all included lists ("pals."),
+# then built-in, or just returns itself if already a vector
+# @param set Character string of single palette name or a vector of colours
+# @param default What to use if an empty string is passed (the default case)
+# @import graphics
+# @import grDevices
 get_set = function(set = '', default = 'turbo' ){
   if(set[1]=='')
     set = default
