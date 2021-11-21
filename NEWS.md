@@ -7,3 +7,4 @@
 
 * Improved autoaxis() to allow spacing=FALSE for date and time axes
 * Added 'above' and 'below' and shorthand options for autolegend()
+* Renamed pals.____ to palette.____ to fit alongside palette.pals()

@@ -3,9 +3,9 @@
 \docType{data}
 \name{autocol}
 \alias{autocol}
-\alias{pals.misc}
-\alias{pals.viridis}
-\alias{pals.rcolorbrewer}
+\alias{palette.misc}
+\alias{palette.viridis}
+\alias{palette.colorbrewer}
 \title{Map Colours From Value}
 \format{
 An object of class \code{list} of length 1.
@@ -25,11 +25,11 @@ autocol(
   legend_len = 6
 )
 
-pals.misc
+palette.misc
 
-pals.viridis
+palette.viridis
 
-pals.rcolorbrewer
+palette.colorbrewer
 }
 \arguments{
 \item{x}{Vector to be mapped to colours}

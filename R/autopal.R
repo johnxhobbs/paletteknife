@@ -251,30 +251,26 @@ autolegend = function(...){
 
   arg = list(...)
 
-  # Add locator() if the first argument is named -- not named assume is 'top'
-  if(length(arg)==0)  arg = list(locator(n=1))
-  if(!is.null(names(arg)))
-    if(names(arg)[1]!='' & !any(c('x','y')%in%names(arg)))
-      arg = c(arg, list(locator(n=1)))
+  # Add locator() if no arguments given
+  if(length(arg)==0)  arg = locator(n=1)
 
-  if(arg[[1]] %in% c('above','below')){
-    new_arg = list(horiz=TRUE, bty='n', inset=1)
-    new_arg = new_arg[!names(new_arg) %in% names(arg)]
-    new_position = list(if(arg[[1]]=='above') 'bottom' else 'top')
-    arg = c(new_position, new_arg, arg[-1]) # remove the 'above'
-  }
-  if('pch' %in% names(arg)) arg = c(arg, list(col = options('autolegend')[[1]][[2]]))
-                      else arg = c(arg, list(fill = options('autolegend')[[1]][[2]]))
+  # Everything before takes priority, after is omitted if manually specified
+  if(arg[[1]]=='above') arg = c(list(x='bottom'), arg[-1], list(horiz=TRUE, bty='n', inset=1))
+  if(arg[[1]]=='below') arg = c(list(x='top'), arg[-1], list(horiz=TRUE, bty='n', inset=1))
+
+  if(is.null(names(arg))) names(arg) = ''
+  if(!any(c('','x','y') %in% names(arg)))
+    arg = c(arg, list(locator(n=1)))
+
+  if('pch' %in% names(arg))
+    arg = c(arg, list(col = options('autolegend')[[1]][[2]]))
+  else
+    arg = c(arg, list(fill = options('autolegend')[[1]][[2]]))
 
   arg = c(arg, list(legend=options('autolegend')[[1]][[1]], xpd=NA ))
 
   do.call(legend, args = arg)
-  return(NULL)
-  if('pch' %in% names(list(...)))  # If pch is provided, we need to use col=   not   fill=
-    legend(..., locator(n=1), legend = options('autolegend')[[1]][[1]], col = options('autolegend')[[1]][[2]], xpd = NA)
 
-  else
-    legend(..., locator(n=1), legend = options('autolegend')[[1]][[1]], fill = options('autolegend')[[1]][[2]], xpd = NA)
   return(invisible(NULL))
 }
 
