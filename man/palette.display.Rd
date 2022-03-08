@@ -23,10 +23,10 @@ palette.display(c(list(rainbow=rainbow(10), default=palette()),
 
 palette.display(list(rainbow=rainbow(45)[30:1], turbo=palette.viridis$turbo ))
 
-# Call by vector of names - here it gets 'Paired' from palette.colorbrewer
+# Call by vector of names - here it gets 'Paired' from palette.colorbrewer
 palette.display(palette.pals() )
 
-# Bit of fun ordering a list of palettes (MUST be same palette size)
+# Bit of fun ordering a list of palettes (MUST be same palette size)
 mat_cols = do.call(rbind, lapply(palette.colorbrewer[9:26],
                           function(hex) as.vector(rgb2hsv(col2rgb(hex)))))
 palette.display(palette.colorbrewer[9:26][hclust(dist(mat_cols))$order])

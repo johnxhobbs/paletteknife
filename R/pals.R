@@ -1,10 +1,10 @@
 
 # Helper to get a set by name - will search all included lists ("palette."),
 # then built-in, or just returns itself if already a vector
-# @param set Character string of single palette name or a vector of colours
-# @param default What to use if an empty string is passed (the default case)
-# @import graphics
-# @import grDevices
+# @param set Character string of single palette name or a vector of colours
+# @param default What to use if an empty string is passed (the default case)
+# @import graphics
+# @import grDevices
 get_set = function(set = '', default = 'turbo' ){
   if(set[1]=='')
     set = default
@@ -16,7 +16,7 @@ get_set = function(set = '', default = 'turbo' ){
       set_palette = palette.colors(palette = set)
   }
 
-  if(length(set) > 1) # you've given your own palette vector
+  if(length(set) > 1) # you've given your own palette vector
     set_palette = set
 
   return(set_palette)
@@ -34,10 +34,10 @@ get_set = function(set = '', default = 'turbo' ){
 #'
 #' palette.display(list(rainbow=rainbow(45)[30:1], turbo=palette.viridis$turbo ))
 #'
-#' # Call by vector of names - here it gets 'Paired' from palette.colorbrewer
+#' # Call by vector of names - here it gets 'Paired' from palette.colorbrewer
 #' palette.display(palette.pals() )
 #'
-#' # Bit of fun ordering a list of palettes (MUST be same palette size)
+#' # Bit of fun ordering a list of palettes (MUST be same palette size)
 #' mat_cols = do.call(rbind, lapply(palette.colorbrewer[9:26],
 #'                           function(hex) as.vector(rgb2hsv(col2rgb(hex)))))
 #' palette.display(palette.colorbrewer[9:26][hclust(dist(mat_cols))$order])
@@ -75,13 +75,13 @@ palette.display = function(palette = palette.colorbrewer){
 }
 
 
-### BELOW are all imported colour palettes
-# Use "palette.source" naming - these are imported into global NAMESPACE so keep them easy to find
+### BELOW are all imported colour palettes
+# Use "palette.source" naming - these are imported into global NAMESPACE so keep them easy to find
 
 #' @rdname autocol
 #' @export
 palette.misc = list(
-  # Sasha Trubetskoy
+  # Sasha Trubetskoy
   # List of 20 Simple, Distinct Colors, 2017
   sasha = c('#E6194B','#3CB44B','#FFE119','#0082C8','#F58230','#911EB4','#46F0F0','#F032E6','#D2F53C','#FABED4','#008080','#DCBEFF','#AA6E28','#FFFAC8','#800000','#AAFFC3','#808000','#FFD7B4','#000080','#808080','#000000')
 )

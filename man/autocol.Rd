@@ -111,35 +111,35 @@ the low end.
 plot(iris$Sepal.Length, iris$Petal.Length, cex=3, pch=16,
     col=autocol(iris$Petal.Width, set='PuBuGn', alpha=0.8, legend_len=12) )
   autolegend('topleft', title='Petal.Width', ncol=3)
-  # Also try simplest "autolegend()" for click-to-draw
+  # Also try simplest "autolegend()" for click-to-draw
 
-# Try scales which include NA in both colour and alpha channel
+# Try scales which include NA in both colour and alpha channel
 with(airquality, plot(Temp, col=autocol(x=Solar.R, set='YlOrRd', alpha=Ozone,
     na_colour='cyan'), pch=16, cex=sqrt(Wind) ))
-  # Note inset=1 draws on opposite side ie above not below plot area
+  # Note inset=1 draws on opposite side ie above not below plot area
   autolegend('bottom', inset=1, bty='n', horiz=TRUE)
 
 
-# Here we want a summary plot ordered by level, so need to create a colour vector to match
-# 'Alphabet' is a built-in colour set, see "palette.pals()"
+# Here we want a summary plot ordered by level, so need to create a colour vector to match
+# 'Alphabet' is a built-in colour set, see "palette.pals()"
 mixedbag = as.factor(sample(letters,1000,replace=TRUE))
   plot(x=mixedbag, y=rnorm(1000), col=autocol(levels(mixedbag), set='Alphabet'))
   autolegend('bottom', ncol=9, cex=0.7)
 
-# Maintain the order of strings
+# Maintain the order of strings
 barplot(1:8, col=autocol(LETTERS[8:1]))
   autolegend('topleft')
 
-# Any unusual formats are coerced to numeric and the legend converted back
+# Any unusual formats are coerced to numeric and the legend converted back
 mydates = as.Date('2000-01-01')+0:100
   plot(mydates, pch=16, col=autocol(mydates, set=rainbow(10), bias=2) )
   autolegend(x=0, y=mydates[100], title='My Dates')
 
-# Timeseries objects plot as a line, but can overlay with points()
+# Timeseries objects plot as a line, but can overlay with points()
 plot(airmiles)
   points(airmiles, pch=15, col=autocol(airmiles, set='Reds'))
 
-# Use the limits to clip or augment the colour-scale
+# Use the limits to clip or augment the colour-scale
 layout(matrix(1:2))
   plot(runif(10), col=autocol(1:10, limits=c(0,20)), pch=16,
     main='Data split over two plots with same scale')
@@ -149,7 +149,7 @@ layout(matrix(1:2))
 value of 100 but
 clipped to max
 colour == 20')
-  autolegend('bottom', inset=1, horiz=TRUE) # Draws above!
+  autolegend('bottom', inset=1, horiz=TRUE) # Draws above!
   layout(1)
 
 }

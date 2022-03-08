@@ -10,7 +10,7 @@ There was 1 NOTE:
 There are currently no downstream dependencies for this package
 
 
-## CRAN maintainer feedback
+## CRAN maintainer feedback
 
 * Added \value tags to all exported functions (for sure)
 * Added () after function names

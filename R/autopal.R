@@ -54,35 +54,35 @@
 #' plot(iris$Sepal.Length, iris$Petal.Length, cex=3, pch=16,
 #'     col=autocol(iris$Petal.Width, set='PuBuGn', alpha=0.8, legend_len=12) )
 #'   autolegend('topleft', title='Petal.Width', ncol=3)
-#'   # Also try simplest "autolegend()" for click-to-draw
+#'   # Also try simplest "autolegend()" for click-to-draw
 #'
-#' # Try scales which include NA in both colour and alpha channel
+#' # Try scales which include NA in both colour and alpha channel
 #' with(airquality, plot(Temp, col=autocol(x=Solar.R, set='YlOrRd', alpha=Ozone,
 #'     na_colour='cyan'), pch=16, cex=sqrt(Wind) ))
-#'   # Note inset=1 draws on opposite side ie above not below plot area
+#'   # Note inset=1 draws on opposite side ie above not below plot area
 #'   autolegend('bottom', inset=1, bty='n', horiz=TRUE)
 #'
 #'
-#' # Here we want a summary plot ordered by level, so need to create a colour vector to match
-#' # 'Alphabet' is a built-in colour set, see "palette.pals()"
+#' # Here we want a summary plot ordered by level, so need to create a colour vector to match
+#' # 'Alphabet' is a built-in colour set, see "palette.pals()"
 #' mixedbag = as.factor(sample(letters,1000,replace=TRUE))
 #'   plot(x=mixedbag, y=rnorm(1000), col=autocol(levels(mixedbag), set='Alphabet'))
 #'   autolegend('bottom', ncol=9, cex=0.7)
 #'
-#' # Maintain the order of strings
+#' # Maintain the order of strings
 #' barplot(1:8, col=autocol(LETTERS[8:1]))
 #'   autolegend('topleft')
 #'
-#' # Any unusual formats are coerced to numeric and the legend converted back
+#' # Any unusual formats are coerced to numeric and the legend converted back
 #' mydates = as.Date('2000-01-01')+0:100
 #'   plot(mydates, pch=16, col=autocol(mydates, set=rainbow(10), bias=2) )
 #'   autolegend(x=0, y=mydates[100], title='My Dates')
 #'
-#' # Timeseries objects plot as a line, but can overlay with points()
+#' # Timeseries objects plot as a line, but can overlay with points()
 #' plot(airmiles)
 #'   points(airmiles, pch=15, col=autocol(airmiles, set='Reds'))
 #'
-#' # Use the limits to clip or augment the colour-scale
+#' # Use the limits to clip or augment the colour-scale
 #' layout(matrix(1:2))
 #'   plot(runif(10), col=autocol(1:10, limits=c(0,20)), pch=16,
 #'     main='Data split over two plots with same scale')
@@ -92,7 +92,7 @@
 #' value of 100 but
 #' clipped to max
 #' colour == 20')
-#'   autolegend('bottom', inset=1, horiz=TRUE) # Draws above!
+#'   autolegend('bottom', inset=1, horiz=TRUE) # Draws above!
 #'   layout(1)
 #'
 #' @param x Vector to be mapped to colours
@@ -114,10 +114,10 @@
 #' @import grDevices
 #' @export
 autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 1, legend_len = 6){
-  # Sanitise the input arguments
-  # TODO
+  # Sanitise the input arguments
+  # TODO
 
-  # Choose whether continuous or categorical datatype based on class(x)
+  # Choose whether continuous or categorical datatype based on class(x)
   pal_type = switch (class(x)[1],
     'factor' = 'categorical',
     'character' = 'categorical',
@@ -128,12 +128,12 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
   )
 
   if(pal_type=='trynumeric'){
-    original_class = class(x) # Will use later to convert legend back to input class
+    original_class = class(x) # Will use later to convert legend back to input class
     x = as.numeric(x)
     if(!length(x) > 1) stop('Could not convert as.numeric(x)')
   }
 
-  # Get ready to replace these again at the end
+  # Get ready to replace these again at the end
   x_na = is.na(x)
 
   if(pal_type=='categorical'){
@@ -156,7 +156,7 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
 
   if(pal_type=='continuous' | pal_type=='trynumeric'){
     chosen_colour_ramp = colorRamp(get_set(set, default = 'viridis'), space = 'Lab', bias = bias)
-    # Correct limits
+    # Correct limits
     if(is.na(limits[1]))
       limits = range(x, na.rm = TRUE)
 
@@ -165,22 +165,22 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
 
     x_scaled = (x - limits[1]) / (limits[2] - limits[1])
     x_scaled = pmin(1,pmax(0, x_scaled))
-    # rgb() cannot pass na values, so find and replace these NA for now
+    # rgb() cannot pass na values, so find and replace these NA for now
     x_scaled[x_na] = 0
     res_pal = rgb(chosen_colour_ramp(x_scaled), maxColorValue = 255)
     res_pal[x_na] = NA
   }
 
-  # Deal with any NA colours
+  # Deal with any NA colours
   res_pal[x_na] = na_colour
 
-  # Deal with the alpha channel -- this is the same for categorical and discrete
-  # The values are mapped 0 (transparent) to 255 (solid), such that either 1.0
-  # is solid, or whatever the maximum value is.
-  # col2rgb() allows the res_pal so far to have colour names --> hex codes
+  # Deal with the alpha channel -- this is the same for categorical and discrete
+  # The values are mapped 0 (transparent) to 255 (solid), such that either 1.0
+  # is solid, or whatever the maximum value is.
+  # col2rgb() allows the res_pal so far to have colour names --> hex codes
   if(!is.na(alpha[1])){
     max_alpha = if(length(alpha)==1) 1 else max(alpha,na.rm=TRUE)
-    alpha = pmax(0, alpha, na.rm=TRUE) # Negative alpha and NA are both turned invisible
+    alpha = pmax(0, alpha, na.rm=TRUE) # Negative alpha and NA are both turned invisible
     res_pal = rgb(t(col2rgb( res_pal )), alpha=255*alpha/max_alpha, maxColorValue=255 )
     }
   return(res_pal)
@@ -205,28 +205,28 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
 #' See more examples in ?autocol for a `plot()` and `autolegend()` work flow.
 #'
 #' @examples
-#' # Simplest version: click-to-draw with locator()
+#' # Simplest version: click-to-draw with locator()
 #' plot(1:10, pch=16, col=autocol(1:10, 'Blues', legend_len=5))
-#' # autolegend() # Try me! And click on plot to add legend
+#' # autolegend() # Try me! And click on plot to add legend
 #'
-#' # Other neat versions -- note ?legend
+#' # Other neat versions -- note ?legend
 #' autolegend('above', title='Above plot')
-#' # Exactly equivalent to...
+#' # Exactly equivalent to...
 #' autolegend('bottom', inset=1, horiz=TRUE, bty='n')
 #' autolegend(x=6, y=4, ncol=2, title='Draw at (6,4)')
 #' autolegend('topleft', title='"topleft"', ncol=2, bty='n')
 #'
-#' # Use pch (and optionally pt.cex) in legend -- these get recycled
+#' # Use pch (and optionally pt.cex) in legend -- these get recycled
 #' autolegend('bottom', horiz=TRUE, pch=16, pt.cex=3, title='pch=16, pt.cex=3')
 #' autolegend('right', pch=1:10, pt.cex=2, title='pch=1:10')
 #'
-#' # Manipulate the legend text, for example with format(), this is a bit long-winded!
+#' # Manipulate the legend text, for example with format(), this is a bit long-winded!
 #' heatmap(as.matrix(eurodist), col=autopal('turbo', limits=range(eurodist)) )
 #' current_legend = options('autolegend')[[1]]
 #' options(autolegend = list(format(current_legend[[1]], big.mark=','), current_legend[[2]]))
 #' autolegend('bottom', inset=1, horiz=TRUE, title='Misleading miles between cities')
 #'
-#' # No helper exists yet for creating size or shape legends -- follow this idea...
+#' # No helper exists yet for creating size or shape legends -- follow this idea...
 #' with(airquality, plot(Temp, pch=16, cex=Solar.R/100, col=autocol(Ozone, set='Reds')))
 #' cex_legend = pretty(airquality$Solar.R)
 #' legend('bottom', pt.cex=cex_legend/100, legend=cex_legend, pch=1,
@@ -245,16 +245,16 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
 autolegend = function(...){
   if(!'autolegend' %in% names(options())) stop('Must call autocol(...) first to create options("autolegend")')
 
-  # TODO - tody this up a bit and have a list of named defaults (like 'above')
-  # which are autofilled.
-  # If any args are present / missing, additional calls can be made
+  # TODO - tody this up a bit and have a list of named defaults (like 'above')
+  # which are autofilled.
+  # If any args are present / missing, additional calls can be made
 
   arg = list(...)
 
-  # Add locator() if no arguments given
+  # Add locator() if no arguments given
   if(length(arg)==0)  arg = locator(n=1)
 
-  # Everything before takes priority, after is omitted if manually specified
+  # Everything before takes priority, after is omitted if manually specified
   if(arg[[1]]=='above') arg = c(list(x='bottom'), arg[-1], list(horiz=TRUE, bty='n', inset=1))
   if(arg[[1]]=='below') arg = c(list(x='top'), arg[-1], list(horiz=TRUE, bty='n', inset=1))
 
@@ -291,7 +291,7 @@ autolegend = function(...){
 #'     breaks=seq(50,200,length.out=101) )
 #'   autolegend('bottom', inset=1, ncol=5)
 #'
-#' # Or using the slightly smarter filled.contour
+#' # Or using the slightly smarter filled.contour
 #' filled.contour(volcano, col=autopal('RdYlGn', n=20, limits=c(100,150)),
 #'   levels=seq(50,200,length.out=21) )
 #'
@@ -327,7 +327,7 @@ autopal = function(set = '', n = 30, limits = NA, bias = 1, legend_len = 6){
 #' @import graphics
 #' @import grDevices
 create_autolegend_data = function(limits, chosen_colour_ramp, legend_len = 6, override_class = NA){
-  # Make legend data -- get pretty intervals and then cap ends to suitable decimal places
+  # Make legend data -- get pretty intervals and then cap ends to suitable decimal places
   legend_labels = pretty(limits, n = legend_len)
   longest_label = max(nchar(as.character(legend_labels)))
   legend_labels[1] = signif(limits[1], digits = longest_label)
@@ -338,9 +338,9 @@ create_autolegend_data = function(limits, chosen_colour_ramp, legend_len = 6, ov
   if(!is.na(override_class[1]))
     attr(legend_labels, 'class') = override_class
 
-  # Push legend levels into the parent scope as hidden object for drawing later
-  # This is done to allow a colour vector to be returned, and the associated
-  # legend information to be stashed for the subsequent add legend
+  # Push legend levels into the parent scope as hidden object for drawing later
+  # This is done to allow a colour vector to be returned, and the associated
+  # legend information to be stashed for the subsequent add legend
   options(autolegend = list(legend_labels, legend_fill))
   return(invisible(NULL))
 }

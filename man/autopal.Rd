@@ -39,7 +39,7 @@ image(volcano, col=autopal('RdYlGn', n=100, limits=c(50,200), bias=1.5),
     breaks=seq(50,200,length.out=101) )
   autolegend('bottom', inset=1, ncol=5)
 
-# Or using the slightly smarter filled.contour
+# Or using the slightly smarter filled.contour
 filled.contour(volcano, col=autopal('RdYlGn', n=20, limits=c(100,150)),
   levels=seq(50,200,length.out=21) )
 

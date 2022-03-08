@@ -33,28 +33,28 @@ if needs be.
 See more examples in ?autocol for a \code{plot()} and \code{autolegend()} work flow.
 }
 \examples{
-# Simplest version: click-to-draw with locator()
+# Simplest version: click-to-draw with locator()
 plot(1:10, pch=16, col=autocol(1:10, 'Blues', legend_len=5))
-# autolegend() # Try me! And click on plot to add legend
+# autolegend() # Try me! And click on plot to add legend
 
-# Other neat versions -- note ?legend
+# Other neat versions -- note ?legend
 autolegend('above', title='Above plot')
-# Exactly equivalent to...
+# Exactly equivalent to...
 autolegend('bottom', inset=1, horiz=TRUE, bty='n')
 autolegend(x=6, y=4, ncol=2, title='Draw at (6,4)')
 autolegend('topleft', title='"topleft"', ncol=2, bty='n')
 
-# Use pch (and optionally pt.cex) in legend -- these get recycled
+# Use pch (and optionally pt.cex) in legend -- these get recycled
 autolegend('bottom', horiz=TRUE, pch=16, pt.cex=3, title='pch=16, pt.cex=3')
 autolegend('right', pch=1:10, pt.cex=2, title='pch=1:10')
 
-# Manipulate the legend text, for example with format(), this is a bit long-winded!
+# Manipulate the legend text, for example with format(), this is a bit long-winded!
 heatmap(as.matrix(eurodist), col=autopal('turbo', limits=range(eurodist)) )
 current_legend = options('autolegend')[[1]]
 options(autolegend = list(format(current_legend[[1]], big.mark=','), current_legend[[2]]))
 autolegend('bottom', inset=1, horiz=TRUE, title='Misleading miles between cities')
 
-# No helper exists yet for creating size or shape legends -- follow this idea...
+# No helper exists yet for creating size or shape legends -- follow this idea...
 with(airquality, plot(Temp, pch=16, cex=Solar.R/100, col=autocol(Ozone, set='Reds')))
 cex_legend = pretty(airquality$Solar.R)
 legend('bottom', pt.cex=cex_legend/100, legend=cex_legend, pch=1,
