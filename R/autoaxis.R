@@ -55,9 +55,9 @@
 #'
 #' plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3),
 #'     rnorm(1e3), xlab='POSIXct', xaxt='n')
-#'   autoaxis(side=1, major='day', minor='3 hour', format='%A')
+#'   autoaxis(side=1, major='day', minor='3 hour', format='%x')
 #'   # Shortcut method to make a default dense grid
-#'   autoaxis(side='3', format='%H:%M')
+#'   autoaxis(side='3')
 #'   autoaxis(side=2)
 #'   # You can always request a datetime axis (side='4' not 4L) but it will be nonsense
 #'   autoaxis(side='4', col='red')
@@ -99,8 +99,8 @@
 #' @param minor_grid Add gridlines for minor ticks, `TRUE` uses transparent
 #'              black, otherwise colour string
 #' @param format Date or time format for major axis for example `'%Y %b'`. If left
-#'              as the default `'auto'` an appropriate choice between `'%S'` and
-#'               `'%F'` will be used. Note, `major` or `side` must be given as a
+#'              as the default `'auto'` an appropriate choice between seconds
+#'              and years will be used. Note, `major` or `side` must be given as a
 #'              character string to trigger datetime labels.
 #' @param tck   Size of axis tick: minor axis will always take half this value
 #' @param spacing Should `major` and `minor` be interpreted as tick spacing
@@ -128,7 +128,7 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
     spacing = FALSE
   }
 
-  date_axis = class(major)=='character' | class(minor)=='character'
+  date_axis = class(side)=='character' | class(major)=='character' | class(minor)=='character'
   date_format = FALSE
   #if(date_axis==TRUE & spacing==FALSE) stop('spacing must be TRUE for time-interval axes')
 
@@ -165,15 +165,27 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
 
   # If format is not specified then try to guess it from units()
   # Note, this is way more simple than axis.POSIXct() and axis.Date()
-  # and will try to give everything in numbers not day or month names
+  # but will need tweaking to make it look natural as often as possible
   if(format=='auto' & date_axis){
-    format = switch (units(diff(lims)),
-       'secs' = '%S',
-       'mins' = '%M:%S',
-       'hours' = '%H:%M',
-       'days' = '%Y-%m-%d',
-       '%Y-%m-%d'
-    )
+    seconds_diff = diff(as.numeric(lims))
+    format = as.character(cut(seconds_diff,
+                 breaks=c(0,
+                          60,
+                          3600, # Less than a day is easy -- give 'time' only
+                          24*3600, # More than 1 day, give "Weds 12:00"
+                          7*24*3600, # More than 7 days,
+                          10*24*3600, # Default ISO datestamp for more than 10 days
+                          365*24*3600, # more than 1 year, give "Jan 2020"
+                          10*365*24*3600, # more than 10 years, give only year
+                          +Inf),
+                 labels=c('%S',
+                          '%M:%S',
+                          '%H:%M',
+                          '%a %H:%M',
+                          '%a %d',
+                          '%Y-%m-%d',
+                          '%b %Y',
+                          '%Y') ))
   }
 
   # Start off by getting pretty start / finish -- used for spacing = T or F

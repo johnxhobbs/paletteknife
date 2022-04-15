@@ -10,7 +10,7 @@ autoaxis(
   major_grid = FALSE,
   minor = NA,
   minor_grid = FALSE,
-  format = "\%Y-\%m-\%d",
+  format = "auto",
   spacing = TRUE,
   tck = -0.03,
   ...
@@ -36,8 +36,10 @@ If given as a character string, it will pass to \code{seq.POSIXt}}
 \item{minor_grid}{Add gridlines for minor ticks, \code{TRUE} uses transparent
 black, otherwise colour string}
 
-\item{format}{Date or time format for major axis -- \code{major} must be a
-character string in this case}
+\item{format}{Date or time format for major axis for example \code{'\%Y \%b'}. If left
+as the default \code{'auto'} an appropriate choice between seconds
+and years will be used. Note, \code{major} or \code{side} must be given as a
+character string to trigger datetime labels.}
 
 \item{spacing}{Should \code{major} and \code{minor} be interpreted as tick spacing
 (default) or approximate number of ticks}
@@ -102,9 +104,9 @@ plot(sunspots) # This time series is actually given in decimal years
 
 plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3),
     rnorm(1e3), xlab='POSIXct', xaxt='n')
-  autoaxis(side=1, major='day', minor='3 hour', format='\%A')
+  autoaxis(side=1, major='day', minor='3 hour', format='\%x')
   # Shortcut method to make a default dense grid
-  autoaxis(side='3', format='\%H:\%M')
+  autoaxis(side='3')
   autoaxis(side=2)
   # You can always request a datetime axis (side='4' not 4L) but it will be nonsense
   autoaxis(side='4', col='red')
