@@ -4,9 +4,30 @@
 \alias{autozoom}
 \title{Auto Zoom to Create a Dynamic Plot}
 \usage{
-autozoom(plt)
+autozoom(x, ..., decoration = function() NULL)
 }
 \description{
-Takes a plot function as its argument and repeats the call every time the plot
-is interacted with (click to zoom), using the new plot limits.
+Replaces \code{plot()} with an interactive loop which allows user to click twice
+on the plot window to redraw with new limits. Press ESCAPE to finish.
+}
+\details{
+Click twice to set the new plot extents. If both clicks are on one of the axis
+(outside of the plot area) then only this axis is zoomed. Click twice on the
+same spot to reset the zoom to the entire plot.
+
+Decorations such as axis or legends are added using the \code{decoration} argument.
+This may change in the future to be more elegant, such as using \code{match.arg()}
+}
+\examples{
+autozoom(airmiles)
+
+autozoom(faithful, cex=runif(272), decoration=function() {autoaxis(3); autoaxis(4)} )
+
+autozoom(faithful, xaxt='n', col=autocol(sample(1:4,272,replace=TRUE)), pch=16,
+  decoration=function() autolegend('above') )
+
+with(airquality, autozoom(Solar.R, Wind, pch=16, cex=3,
+  col=autocol(Temp,'Reds',alpha=0.5),
+  decoration=function() autolegend('above') ) )
+
 }

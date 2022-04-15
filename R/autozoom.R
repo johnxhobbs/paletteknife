@@ -15,12 +15,12 @@
 #' @examples
 #' autozoom(airmiles)
 #'
-#' autozoom(faithful, cex=runif(272), decoration=function() autoaxis() )
+#' autozoom(faithful, cex=runif(272), decoration=function() {autoaxis(3); autoaxis(4)} )
 #'
-#' autozoom(faithful, col=autocol(sample(1:4,272,replace=TRUE)), pch=16,
+#' autozoom(faithful, xaxt='n', col=autocol(sample(1:4,272,replace=TRUE)), pch=16,
 #'   decoration=function() autolegend('above') )
 #'
-#' with(lapply(airquality,jitter,10), autozoom(Solar.R, Wind, pch=16, cex=3,
+#' with(airquality, autozoom(Solar.R, Wind, pch=16, cex=3,
 #'   col=autocol(Temp,'Reds',alpha=0.5),
 #'   decoration=function() autolegend('above') ) )
 #'
