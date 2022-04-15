@@ -120,6 +120,7 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
   # Choose whether continuous or categorical datatype based on class(x)
   pal_type = switch (class(x)[1],
     'factor' = 'categorical',
+    'ordered' = 'categorical',  # Assuming this MUST be 'ordered' 'factor'
     'character' = 'categorical',
     'logical' = 'categorical',
     'integer' = 'continuous',
@@ -140,7 +141,7 @@ autocol = function(x, set = '', alpha = NA, limits = NA, na_colour = NA, bias = 
 
     set_palette = get_set(set, default = 'sasha')
 
-    if(class(x)=='character') x = factor(x, levels=unique(x))
+    if(class(x)[1]=='character') x = factor(x, levels=unique(x))
     col_level = as.integer(as.factor(x)) %% length(set_palette)
     col_level[col_level==0] = length(set_palette)
 
