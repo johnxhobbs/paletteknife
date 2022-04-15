@@ -98,8 +98,10 @@
 #'              If given as a character string, it will pass to `seq.POSIXt`
 #' @param minor_grid Add gridlines for minor ticks, `TRUE` uses transparent
 #'              black, otherwise colour string
-#' @param format Date or time format for major axis -- `major` must be a
-#'              character string in this case
+#' @param format Date or time format for major axis for example `'%Y %b'`. If left
+#'              as the default `'auto'` an appropriate choice between `'%S'` and
+#'               `'%F'` will be used. Note, `major` or `side` must be given as a
+#'              character string to trigger datetime labels.
 #' @param tck   Size of axis tick: minor axis will always take half this value
 #' @param spacing Should `major` and `minor` be interpreted as tick spacing
 #'              (default) or approximate number of ticks
@@ -112,7 +114,7 @@
 #' @import grDevices
 #' @export
 autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid = FALSE,
-                    format = '%Y-%m-%d', spacing = TRUE, tck=-0.03, ...){
+                    format = 'auto', spacing = TRUE, tck=-0.03, ...){
   if(side %in% c(1,3))
     lims = par('usr')[1:2] # Drawing x-axis
   else
@@ -159,6 +161,19 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
       lims = as.POSIXct.Date(lims, origin = '1970-01-01')
     else
       lims = as.POSIXct.numeric(lims, origin = '1970-01-01')
+  }
+
+  # If format is not specified then try to guess it from units()
+  # Note, this is way more simple than axis.POSIXct() and axis.Date()
+  # and will try to give everything in numbers not day or month names
+  if(format=='auto' & date_axis){
+    format = switch (units(diff(lims)),
+       'secs' = '%S',
+       'mins' = '%M:%S',
+       'hours' = '%H:%M',
+       'days' = '%Y-%m-%d',
+       '%Y-%m-%d'
+    )
   }
 
   # Start off by getting pretty start / finish -- used for spacing = T or F
