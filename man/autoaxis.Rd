@@ -17,7 +17,10 @@ autoaxis(
 )
 }
 \arguments{
-\item{side}{Side to add axis, 1 = bottom, 2 = left, 3 = top, 4 = right}
+\item{side}{Side to add axis, 1 = bottom, 2 = left, 3 = top, 4 = right. If
+only this argument is given, a default dense grid is drawn. If
+this argument is given as a character, a date-time grid will be
+attempted, for example \code{side='1'}}
 
 \item{major}{Spacing of major axis ticks and labels (or approx. number of
 intervals if \code{spacing = FALSE}). If the axis is date or time,
@@ -50,7 +53,7 @@ No return value (\code{NULL})
 \description{
 Overlay base plot with a new axis and optional gridlines. The axis spacing can
 be manually specified or automatically generated, including for date and time
-axis.
+axis. A default grid is drawn if called with just the \code{side} specified.
 }
 \details{
 Major and minor tick marks can be specified in a number of ways:
@@ -99,8 +102,12 @@ plot(sunspots) # This time series is actually given in decimal years
 
 plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3),
     rnorm(1e3), xlab='POSIXct', xaxt='n')
-  autoaxis(side=1, major='day', minor='hour', format='\%A')
-  autoaxis(side=3, major='6 hour', format='\%H:\%M')
+  autoaxis(side=1, major='day', minor='3 hour', format='\%A')
+  # Shortcut method to make a default dense grid
+  autoaxis(side='3', format='\%H:\%M')
+  autoaxis(side=2)
+  # You can always request a datetime axis (side='4' not 4L) but it will be nonsense
+  autoaxis(side='4', col='red')
 
 plot(seq(as.Date('2013-02-01'),as.Date('2020-01-03'),length.out=1e3),
     rnorm(1e3), xlab='Date', xaxt='n')

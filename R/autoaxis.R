@@ -5,7 +5,7 @@
 #'
 #' Overlay base plot with a new axis and optional gridlines. The axis spacing can
 #' be manually specified or automatically generated, including for date and time
-#' axis.
+#' axis. A default grid is drawn if called with just the `side` specified.
 #'
 #' Major and minor tick marks can be specified in a number of ways:
 #'
@@ -55,8 +55,12 @@
 #'
 #' plot(seq(as.POSIXct('2020-01-01'),as.POSIXct('2020-01-03'),length.out=1e3),
 #'     rnorm(1e3), xlab='POSIXct', xaxt='n')
-#'   autoaxis(side=1, major='day', minor='hour', format='%A')
-#'   autoaxis(side=3, major='6 hour', format='%H:%M')
+#'   autoaxis(side=1, major='day', minor='3 hour', format='%A')
+#'   # Shortcut method to make a default dense grid
+#'   autoaxis(side='3', format='%H:%M')
+#'   autoaxis(side=2)
+#'   # You can always request a datetime axis (side='4' not 4L) but it will be nonsense
+#'   autoaxis(side='4', col='red')
 #'
 #' plot(seq(as.Date('2013-02-01'),as.Date('2020-01-03'),length.out=1e3),
 #'     rnorm(1e3), xlab='Date', xaxt='n')
@@ -80,7 +84,10 @@
 #'   # autoaxis can still be used for adjusting the numeric scale
 #'   autoaxis(side=2, major=5, major_grid=TRUE, minor=1, minor_grid=TRUE)
 #'
-#' @param side  Side to add axis, 1 = bottom, 2 = left, 3 = top, 4 = right
+#' @param side  Side to add axis, 1 = bottom, 2 = left, 3 = top, 4 = right. If
+#'              only this argument is given, a default dense grid is drawn. If
+#'              this argument is given as a character, a date-time grid will be
+#'              attempted, for example `side='1'`
 #' @param major Spacing of major axis ticks and labels (or approx. number of
 #'              intervals if `spacing = FALSE`). If the axis is date or time,
 #'              use a interval specified in `?seq.POSIXt`, such as 'sec' or
@@ -110,6 +117,14 @@ autoaxis = function(side, major = NA, major_grid = FALSE, minor = NA, minor_grid
     lims = par('usr')[1:2] # Drawing x-axis
   else
     lims = par('usr')[3:4] # Drawing y-axis
+
+  if(is.na(major) & is.na(minor)){
+    major = if(is.character(side)) '10' else 10
+    minor = if(is.character(side)) '50' else 50
+    major_grid = TRUE
+    minor_grid = TRUE
+    spacing = FALSE
+  }
 
   date_axis = class(major)=='character' | class(minor)=='character'
   date_format = FALSE
