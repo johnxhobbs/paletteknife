@@ -1,10 +1,7 @@
 ## R CMD check results
-There were no ERRORs or WARNINGs. 
+Duration: 15.5s
 
-There was 1 NOTE:
-
-* checking CRAN incoming feasibility ... NOTE
-  Maintainer: ‘John Hobbs <johnxhobbs@gmail.com>’
+0 errors ✓ | 0 warnings ✓ | 0 notes ✓
 
 ## Downstream dependencies
 There are currently no downstream dependencies for this package
@@ -12,5 +9,4 @@ There are currently no downstream dependencies for this package
 
 ## CRAN maintainer feedback
 
-* Added \value tags to all exported functions (for sure)
-* Added () after function names
+* See NEWS for updates -- no build requirements changed

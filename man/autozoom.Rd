@@ -4,7 +4,14 @@
 \alias{autozoom}
 \title{Auto Zoom to Create a Dynamic Plot}
 \usage{
-autozoom(x, ..., decoration = function() NULL)
+autozoom(x, ..., after = NULL)
+}
+\arguments{
+\item{x}{Passed directly to \code{plot()}}
+
+\item{...}{Passed directly to \code{plot()}}
+
+\item{after}{An expression to be executed after each plot is drawn}
 }
 \description{
 Replaces \code{plot()} with an interactive loop which allows user to click twice
@@ -15,19 +22,16 @@ Click twice to set the new plot extents. If both clicks are on one of the axis
 (outside of the plot area) then only this axis is zoomed. Click twice on the
 same spot to reset the zoom to the entire plot.
 
-Decorations such as axis or legends are added using the \code{decoration} argument.
-This may change in the future to be more elegant, such as using \code{match.arg()}
+Extras such as axes or legends are added using the \code{after} argument.
 }
 \examples{
+\dontrun{
 autozoom(airmiles)
 
-autozoom(faithful, cex=runif(272), decoration=function() {autoaxis(3); autoaxis(4)} )
+autozoom(faithful, cex=runif(272), after={autoaxis(3); autoaxis(4)})
 
-autozoom(faithful, xaxt='n', col=autocol(sample(1:4,272,replace=TRUE)), pch=16,
-  decoration=function() autolegend('above') )
-
-with(airquality, autozoom(Solar.R, Wind, pch=16, cex=3,
-  col=autocol(Temp,'Reds',alpha=0.5),
-  decoration=function() autolegend('above') ) )
+autozoom(faithful, col=autocol(runif(272)), pch=16,
+  after=autolegend('above') )
+}
 
 }
