@@ -105,7 +105,7 @@
 #' @param tck   Size of axis tick: minor axis will always take half this value
 #' @param spacing Should `major` and `minor` be interpreted as tick spacing
 #'              (default) or approximate number of ticks
-#' @param ...   Additional arguemnts passed to `axis()`, for example `las=2`
+#' @param ...   Additional arguments passed to `axis()`, for example `las=2`
 #'              for perpendicular labels
 #'
 #' @return No return value (`NULL`)

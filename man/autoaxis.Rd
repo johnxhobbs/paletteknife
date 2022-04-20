@@ -46,7 +46,7 @@ character string to trigger datetime labels.}
 
 \item{tck}{Size of axis tick: minor axis will always take half this value}
 
-\item{...}{Additional arguemnts passed to \code{axis()}, for example \code{las=2}
+\item{...}{Additional arguments passed to \code{axis()}, for example \code{las=2}
 for perpendicular labels}
 }
 \value{
